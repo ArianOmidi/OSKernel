@@ -291,6 +291,38 @@ int print(int argc, char *arg){
 	return 0;
 }
 
+int run(int argc, char* file){
+	if (argc != 2){
+                printf("Usage: run FILE\n");
+                return 1;
+        }
+
+	int errorCode = 0;
+	char line[1000];
+	FILE *p = fopen(file,"rt"); 
+
+	// Check if file exists
+	if (p == NULL){
+		printf("Script not found\n");
+		return 1;
+	}
+
+	fgets(line, 999, p);
+	while(!feof(p)){
+		errorCode = parse(line);
+		if (errorCode == -1){
+			fclose(p);
+			return errorCode;
+		}
+
+		fgets(line, 999, p);
+	}
+
+	fclose(p);
+	
+	return errorCode;
+}
+
 int interpreter(int numOfWords, char *words[]){
 	if (numOfWords == 0){
 		printf("Error: no command entered\n");
@@ -312,6 +344,8 @@ int interpreter(int numOfWords, char *words[]){
                 errorCode = set(numOfWords, words);
         } else if (strcmp(words[0], "print") == 0) {
                 errorCode = print(numOfWords, words[1]);
+        } else if (strcmp(words[0], "run") == 0) {
+                errorCode = run(numOfWords, words[1]);
         } else {
 		printf("Unknown command\n");
 		errorCode = 1;

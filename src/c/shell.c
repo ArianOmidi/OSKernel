@@ -38,6 +38,5 @@ int shellUI()
     }
 
     shell_memory_destory();
-
     return 0;
 }

@@ -1,0 +1,12 @@
+print x
+set x 10
+print x
+set y 55
+print y
+set x 100
+print x
+help
+fuck
+
+help
+print y
