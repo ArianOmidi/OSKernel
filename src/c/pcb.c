@@ -7,3 +7,15 @@ typedef struct PCB{
 	int end;
 } PCB;
 
+
+PCB* makePCB(int start, int end){
+	PCB *pcb = (PCB *) malloc(sizeof(PCB));
+
+	if (pcb != NULL){
+		pcb->PC = start;
+		pcb->start = start; 
+		pcb->end = end;
+	}
+
+	return pcb;
+}

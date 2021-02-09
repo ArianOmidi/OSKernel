@@ -21,9 +21,9 @@ int addToRAM(FILE *p, int *start, int *end){
 	char buffer[1000];
 	int k = nextFreeCell;
 
-	start = nextFreeCell;
+	*start = nextFreeCell;
 
-	while (!feof(program)){
+	while (!feof(p)){
      		fgets(buffer, 999, p);
 		
 		if (k < RAM_SPACE && ram[k] == NULL) {
@@ -31,13 +31,13 @@ int addToRAM(FILE *p, int *start, int *end){
 			k++;
 		} else {
 			printf("ERROR: Not enough RAM to add program.\n");
-			clearRAM(start, k - 1);
+			clearRAM(*start, k - 1);
 			return 1;
 		}	
     	}
 
 	nextFreeCell = k;
-	end = k - 1;
+	*end = k - 1;
 	return 0;
 }
 
