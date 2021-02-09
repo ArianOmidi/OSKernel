@@ -57,6 +57,22 @@ void placeHeadAtTail(){
 	}
 }
 
+void cleanUpPCB(){
+	PCB* pcb = readyList->head->pcb;
+	Node* tmp = readyList->head;
+
+	clearRAM(pcb->start, pcb->end);
+
+	readyList->head = tmp->next;
+	if (readyList->head == NULL)
+		readyList->tail = NULL;
+	
+	free(tmp);
+	free(pcb);
+}
+
+
+// --- KERNEL FUNCTIONS --- //
 
 int myinit(char *filename){
         FILE *program = fopen(filename, "r");
