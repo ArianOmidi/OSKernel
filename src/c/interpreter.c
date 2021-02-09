@@ -151,6 +151,27 @@ int print(const char *key)
     return 0;
 }
 
+int exec(char *programs[], const int num_of_programs){
+	// Validation
+	if (num_of_programs == 0){
+                printf("exec: No arguments given\n");
+                return 1;
+        }
+
+        for (int i = 0; i < num_of_programs; i++){
+                for (int j = 0; j < num_of_programs; j++){
+                        if (i == j) break;
+
+                        if (strcmp(programs[i], programs[j]) == 0){
+                                printf("Error: Script %s already loaded\n", programs[i]);
+                                return 1;
+                        }
+                }
+        }
+
+	return 0;
+}
+
 int interpret(char *raw_input)
 {
     char **tokens = tokenize(raw_input);
@@ -217,6 +238,25 @@ int interpret(char *raw_input)
             free(tokens);
         }
         int result = run(tokens[1]);
+        free(tokens);
+        return result;
+    }
+
+    if (strcmp(tokens[0], "exec") == 0)
+    {
+	int num_of_programs = 0;
+
+	while (tokens[num_of_programs + 1] != NULL && num_of_programs < 3){
+		num_of_programs++;
+	}
+
+	char *filenames[num_of_programs];
+
+	for (int i = 1; i <= num_of_programs; i++){
+		filenames[i - 1] = tokens[i];
+	}
+
+        int result = exec(filenames, num_of_programs);
         free(tokens);
         return result;
     }

@@ -26,5 +26,5 @@ ram.o : ram.c
 
 .PHONY:
 clean:
-	rm -f interpreter.o shell.o shellmemory.o
-	rm -f mysh
+	rm -f interpreter.o shell.o shellmemory.o kernel.o cpu.o pcb.o ram.o
+	rm -f mykernel
