@@ -23,15 +23,11 @@ void setCPU(int IP){
 	strcpy(cpu->IR, loadFromRAM(IP));
 }
 
-int runCPU(int quanta, int end){
+int run(int quanta){
 	for (int i = 0; i < quanta; i++){
 		strcpy(cpu->IR, loadFromRAM(cpu->IP));
 		interpret(cpu->IR);
-		cpu->IP++; 
-
-		if (cpu->IP > end){
-                        return -1;
-                }
+		cpu->IP++;
 	}
 
 	return 0;

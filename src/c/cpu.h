@@ -1,7 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
-int runCPU(int quanta, int end);
+int run(int quanta);
 
 void setCPU(int IP);
 void initCPU();

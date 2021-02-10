@@ -103,7 +103,7 @@ int quit()
     return 0;
 }
 
-int run(const char *path)
+static int run(const char *path)
 {
     FILE *file = fopen(path, "r");
     if (file == NULL)

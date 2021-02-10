@@ -129,19 +129,25 @@ int myinit(char *filename){
 }
 
 int scheduler(){
+	int errorCode;
+	int quanta = 2;
+
 	while (readyList->n > 0){
+		// Set CPU IP to the PC	
 		setCPU(readyList->head->pcb->PC);
 		
-		int quanta = 2;
-		int errorCode = runCPU(quanta, readyList->head->pcb->end);
-
-		if (errorCode == -1) {
+		// If the program executes in under a quanta, give it the amount of CPU time it needs
+		// to complete the program then remove the PCB from the Ready List
+		// Else compute quanta lines and add PCB to tail of Ready List
+		if (quanta > readyList->head->pcb->end - readyList->head->pcb->PC){
+		 	errorCode = run(readyList->head->pcb->end - readyList->head->pcb->PC + 1);
 			removePCB();
 		} else {
+			errorCode = run(quanta);
 			readyList->head->pcb->PC += quanta ;
-			placeHeadAtTail();
+                        placeHeadAtTail();
 		}
-	}	
+	}
 
 	return 0;
 }
