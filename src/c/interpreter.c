@@ -171,12 +171,16 @@ int exec(char *programs[], const int num_of_programs){
         }
 	
 	// Init Programs
+	int errorCode;
+
 	for (int i = 0; i < num_of_programs; i++){
-		myinit(programs[i]);
+		errorCode = myinit(programs[i]);
+
+		if (errorCode != 0)
+			return errorCode;
 	}
 
 	// Run Scheduler
-
 	return scheduler();
 }
 

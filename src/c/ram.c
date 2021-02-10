@@ -17,29 +17,26 @@ void clearRAM(int start, int end){
 	nextFreeCell = start;
 }
 
-int addToRAM(FILE *p, int *start, int *end){
+void addToRAM(FILE *p, int *start, int *end){
 	char buffer[1000];
 	int k = nextFreeCell;
 
 	*start = nextFreeCell;
 
 	while (fgets(buffer, 999, p) != NULL){
-		// TODO Remove - For Testing
-		//printf("%d\t:\t%s", k, buffer);
-
 		if (k < RAM_SPACE && ram[k] == NULL) {
 			ram[k] = strdup(buffer);
 			k++;
 		} else {
 			printf("ERROR: Not enough RAM to add program.\n");
-			clearRAM(*start, k - 1);
-			return 1;
+			clearRAM(0, k - 1);
+			*end = -1;
+			return;
 		}	
     	}
 
 	nextFreeCell = k;
 	*end = k - 1;
-	return 0;
 }
 
 void emptyRAM(){

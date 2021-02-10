@@ -21,13 +21,13 @@ typedef struct ReadyList{
 
 ReadyList *readyList;
 
-ReadyList* initReadyList(){
+void initReadyList(){
 	ReadyList* rl = (ReadyList*) malloc(sizeof(ReadyList));
 	rl->head = NULL;
 	rl->tail = NULL;
 	rl->n = 0;
 
-	return rl;
+	readyList = rl;
 }
 
 int addToReady(PCB* pcb){
@@ -83,6 +83,12 @@ void removePCB(){
 	free(pcb);
 }
 
+void emptyReadyList(){
+        while (readyList->head != NULL){
+                removePCB();
+        }
+}
+
 void printReadyList(){
 	Node* node = readyList->head;
 
@@ -102,12 +108,27 @@ void printReadyList(){
 }
 
 
+void printRAM(){
+	 printf("\nRAM: ALL NON-NULL LINES\n");
+	 char *data;
+	 for (int i = 0; i < 1000; i++){
+		data = loadFromRAM(i);
+
+		if (data != NULL)
+			printf("\t - %d\t : \t%s", i, data);
+	 }
+	 printf("\n");
+}
+
+
+
 // --- KERNEL FUNCTIONS --- //
 
 int myinit(char *filename){
         FILE *program = fopen(filename, "r");
         if (program == NULL){
                 printf("Error: Script %s does not exist\n", filename);
+		emptyReadyList();
                 return 1;
         }
 
@@ -116,11 +137,18 @@ int myinit(char *filename){
 	// Add File to RAM
 	addToRAM(program, &start, &end);
 	fclose(program);
+	if (end < 0) {
+		emptyReadyList();
+		return 1;
+	}
 
 	// Make PCB
 	PCB* pcb = makePCB(start, end);
-	if (pcb == NULL)
+	if (pcb == NULL){
 		printf("ERROR: unable to create PCB for program %s\n", filename);
+ 		emptyReadyList();
+                return 1;
+	}
 
 	// Add PCB to Ready List
 	addToReady(pcb);
@@ -130,8 +158,8 @@ int myinit(char *filename){
 
 int scheduler(){
 	int errorCode;
-	int quanta = 2;
-
+	int quanta = getQuanta();
+	
 	while (readyList->n > 0){
 		// Set CPU IP to the PC	
 		setCPU(readyList->head->pcb->PC);
@@ -148,7 +176,8 @@ int scheduler(){
                         placeHeadAtTail();
 		}
 	}
-
+	
+	emptyRAM();
 	return 0;
 }
 
@@ -156,7 +185,7 @@ int main(int argc, char* argv[]){
 	// Init RAM, CPU & Ready List
 	emptyRAM();
 	initCPU();
-	readyList = initReadyList();
+	initReadyList();
 
 	printf("Kernel 1.0 loaded!\n");
 	shellUI();

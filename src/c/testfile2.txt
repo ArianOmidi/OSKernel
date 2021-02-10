@@ -1,0 +1,18 @@
+help
+set dog Murphy
+set cat Fenway
+set name Arian Omidi
+print dog
+print cat
+print name
+run test1.txt
+exec test1.txt
+exec script3.txt script2.txt script1.txt
+exec test1.txt test1.txt
+exec script3.txt script2.txt notafile.txt
+exec script3.txt largetestfile.txt
+exec test1.txt script2.txt sched2.txt
+print cat
+print x
+exec largetestfile.txt
+print x

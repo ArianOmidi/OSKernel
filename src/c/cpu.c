@@ -18,6 +18,10 @@ void initCPU(){
 	cpu->quanta = 2;	
 }
 
+int getQuanta(){
+	return cpu->quanta;
+}
+
 void setCPU(int IP){
 	cpu->IP = IP;
 	strcpy(cpu->IR, loadFromRAM(IP));
