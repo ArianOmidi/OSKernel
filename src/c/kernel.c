@@ -55,10 +55,11 @@ int addToReady(PCB* pcb){
 
 void placeHeadAtTail(){
 	if (readyList->n > 1){
-		readyList->tail->next = readyList->head;
-		readyList->head = readyList->head->next;
-		readyList->tail = readyList->head;
-		readyList->tail->next = NULL; 
+		Node* tmp = readyList->head;
+		readyList->tail->next = tmp;
+		readyList->head = tmp->next;
+		readyList->tail = tmp;
+		tmp->next = NULL; 
 	}
 }
 
@@ -80,6 +81,21 @@ void removePCB(){
 	free(pcb);
 }
 
+void printReadyList(){
+	Node* node = readyList->head;
+
+	printf("\nReady List: %d PCBS\n", readyList->n);
+	printf("\tHead PCB: PC = %d, start = %d, end = %d\n", readyList->head->pcb->PC, readyList->head->pcb->start, readyList->head->pcb->end);
+	printf("\tTail PCB: PC = %d, start = %d, end = %d\n\n", readyList->tail->pcb->PC, readyList->tail->pcb->start, readyList->tail->pcb->end);
+
+	while(node != NULL){
+		printf("\tPCB: PC = %d, start = %d, end = %d\n", node->pcb->PC, node->pcb->start, node->pcb->end);
+		node = node->next;
+	}
+
+	printf("\n");
+}
+
 
 // --- KERNEL FUNCTIONS --- //
 
@@ -94,6 +110,7 @@ int myinit(char *filename){
 
 	// Add File to RAM
 	addToRAM(program, &start, &end);
+	fclose(program);
 
 	// Make PCB
 	PCB* pcb = makePCB(start, end);
@@ -110,11 +127,9 @@ int scheduler(){
 	while (readyList->n > 0){
 		setCPU(readyList->head->pcb->PC);
 		
-		 printf("RAM:\n");
-		for (int i = readyList->head->pcb->start; i <= readyList->head->pcb->end; i++)
-			printf(" -> %d :  %s", i, loadFromRAM(i));
+		// TODO REMOVE FOR TESTING
+		printReadyList();
 
-		printf("PCB: PC = %d, start = %d, end = %d\n", readyList->head->pcb->PC, readyList->head->pcb->start, readyList->head->pcb->end);
 		int quanta = 2;
 		int errorCode = runCPU(quanta, readyList->head->pcb->end);
 
@@ -123,9 +138,9 @@ int scheduler(){
 			printf("\nPCB Removed\n");
 		} else {
 			readyList->head->pcb->PC += quanta ;
-			printf("PCB: PC = %d, start = %d, end = %d\n\n", readyList->head->pcb->PC, readyList->head->pcb->start, readyList->head->pcb->end);
 			placeHeadAtTail();
 		}
+
 	}	
 
 	return 0;

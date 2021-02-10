@@ -23,9 +23,10 @@ int addToRAM(FILE *p, int *start, int *end){
 
 	*start = nextFreeCell;
 
-	while (!feof(p)){
-     		fgets(buffer, 999, p);
-		
+	while (fgets(buffer, 999, p) != NULL){
+		// TODO Remove - For Testing
+		printf("%d\t:\t%s", k, buffer);
+
 		if (k < RAM_SPACE && ram[k] == NULL) {
 			ram[k] = strdup(buffer);
 			k++;
