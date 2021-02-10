@@ -1,3 +1,4 @@
+#include "kernel.h"
 #include "interpreter.h"
 #include "shellmemory.h"
 
@@ -168,8 +169,15 @@ int exec(char *programs[], const int num_of_programs){
                         }
                 }
         }
+	
+	// Init Programs
+	for (int i = 0; i < num_of_programs; i++){
+		myinit(programs[i]);
+	}
 
-	return 0;
+	// Run Scheduler
+
+	return scheduler();
 }
 
 int interpret(char *raw_input)

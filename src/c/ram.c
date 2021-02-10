@@ -44,3 +44,11 @@ int addToRAM(FILE *p, int *start, int *end){
 void emptyRAM(){
 	clearRAM(0, RAM_SPACE - 1);
 }
+
+char* loadFromRAM(int address){
+	if (address >= 0 && address < 1000)
+		return ram[address];
+
+	printf("ERROR: Address not in RAM\n");
+	return NULL;
+}

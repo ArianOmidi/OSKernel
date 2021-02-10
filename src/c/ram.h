@@ -3,8 +3,10 @@
 #include <stdio.h>
 
 void emptyRAM();
-
 void clearRAM(int start, int end);
+
 void addToRAM(FILE *p, int *start, int *end);
+
+char* loadFromRAM(int address);
 
 #endif

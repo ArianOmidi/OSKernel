@@ -16,6 +16,7 @@ typedef struct Node{
 typedef struct ReadyList{
 	Node* head;
 	Node* tail;
+	int n;
 } ReadyList;
 
 ReadyList *readyList;
@@ -24,11 +25,12 @@ ReadyList* initReadyList(){
 	ReadyList* rl = (ReadyList*) malloc(sizeof(ReadyList));
 	rl->head = NULL;
 	rl->tail = NULL;
+	rl->n = 0;
 
 	return rl;
 }
 
-int addPCBToReadyList(PCB* pcb){
+int addToReady(PCB* pcb){
 	Node* tmp = (Node*) malloc(sizeof(Node));
 	
 	if (tmp == NULL){
@@ -39,17 +41,20 @@ int addPCBToReadyList(PCB* pcb){
 	tmp->pcb = pcb;
 	tmp->next = NULL;
 
-	if(readyList->head == NULL)
+	if (readyList->n == 0){
 	       readyList->head = tmp;
-	if (readyList->tail != NULL)
+	} else {
 		readyList->tail->next = tmp;	
+	}
 	readyList->tail = tmp;
 
+	readyList->n++;
+	
 	return 0;
 }
 
 void placeHeadAtTail(){
-	if (readyList->tail != readyList->head){
+	if (readyList->n > 1){
 		readyList->tail->next = readyList->head;
 		readyList->head = readyList->head->next;
 		readyList->tail = readyList->head;
@@ -57,7 +62,10 @@ void placeHeadAtTail(){
 	}
 }
 
-void cleanUpPCB(){
+void removePCB(){
+	if (readyList->n == 0)
+		return;
+
 	PCB* pcb = readyList->head->pcb;
 	Node* tmp = readyList->head;
 
@@ -66,7 +74,8 @@ void cleanUpPCB(){
 	readyList->head = tmp->next;
 	if (readyList->head == NULL)
 		readyList->tail = NULL;
-	
+	readyList->n--;
+
 	free(tmp);
 	free(pcb);
 }
@@ -81,13 +90,52 @@ int myinit(char *filename){
                 return 1;
         }
 
-        // TODO
+	int start, end;
+
+	// Add File to RAM
+	addToRAM(program, &start, &end);
+
+	// Make PCB
+	PCB* pcb = makePCB(start, end);
+	if (pcb == NULL)
+		printf("ERROR: unable to create PCB for program %s\n", filename);
+
+	// Add PCB to Ready List
+	addToReady(pcb);
+	
         return 0;
 }
 
+int scheduler(){
+	while (readyList->n > 0){
+		setCPU(readyList->head->pcb->PC);
+		
+		 printf("RAM:\n");
+		for (int i = readyList->head->pcb->start; i <= readyList->head->pcb->end; i++)
+			printf(" -> %d :  %s", i, loadFromRAM(i));
+
+		printf("PCB: PC = %d, start = %d, end = %d\n", readyList->head->pcb->PC, readyList->head->pcb->start, readyList->head->pcb->end);
+		int quanta = 2;
+		int errorCode = runCPU(quanta, readyList->head->pcb->end);
+
+		if (errorCode == -1) {
+			removePCB();
+			printf("\nPCB Removed\n");
+		} else {
+			readyList->head->pcb->PC += quanta ;
+			printf("PCB: PC = %d, start = %d, end = %d\n\n", readyList->head->pcb->PC, readyList->head->pcb->start, readyList->head->pcb->end);
+			placeHeadAtTail();
+		}
+	}	
+
+	return 0;
+}
+
 int main(int argc, char* argv[]){
-	// Init RAM
+	// Init RAM, CPU & Ready List
 	emptyRAM();
+	initCPU();
+	readyList = initReadyList();
 
 	printf("Kernel 1.0 loaded!\n");
 	shellUI();
