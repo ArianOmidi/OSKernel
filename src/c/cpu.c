@@ -25,17 +25,13 @@ void setCPU(int IP){
 
 int runCPU(int quanta, int end){
 	for (int i = 0; i < quanta; i++){
-		if (cpu->IP > end){
-			printf("Program Finished\n");
-			return -1;
-		}
-		
-		printf(" - %s", loadFromRAM(cpu->IP));
-
 		strcpy(cpu->IR, loadFromRAM(cpu->IP));
 		interpret(cpu->IR);
+		cpu->IP++; 
 
-		cpu->IP = cpu->IP + 1; 
+		if (cpu->IP > end){
+                        return -1;
+                }
 	}
 
 	return 0;

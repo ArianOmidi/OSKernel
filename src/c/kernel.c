@@ -73,9 +73,11 @@ void removePCB(){
 	clearRAM(pcb->start, pcb->end);
 
 	readyList->head = tmp->next;
-	if (readyList->head == NULL)
+	if (readyList->n == 1) {
+		readyList->head = NULL;
 		readyList->tail = NULL;
-	readyList->n--;
+	}
+	readyList->n = readyList->n - 1;
 
 	free(tmp);
 	free(pcb);
@@ -85,6 +87,8 @@ void printReadyList(){
 	Node* node = readyList->head;
 
 	printf("\nReady List: %d PCBS\n", readyList->n);
+
+	if (readyList->n > 0){
 	printf("\tHead PCB: PC = %d, start = %d, end = %d\n", readyList->head->pcb->PC, readyList->head->pcb->start, readyList->head->pcb->end);
 	printf("\tTail PCB: PC = %d, start = %d, end = %d\n\n", readyList->tail->pcb->PC, readyList->tail->pcb->start, readyList->tail->pcb->end);
 
@@ -94,6 +98,7 @@ void printReadyList(){
 	}
 
 	printf("\n");
+	}
 }
 
 
@@ -127,20 +132,15 @@ int scheduler(){
 	while (readyList->n > 0){
 		setCPU(readyList->head->pcb->PC);
 		
-		// TODO REMOVE FOR TESTING
-		printReadyList();
-
 		int quanta = 2;
 		int errorCode = runCPU(quanta, readyList->head->pcb->end);
 
 		if (errorCode == -1) {
 			removePCB();
-			printf("\nPCB Removed\n");
 		} else {
 			readyList->head->pcb->PC += quanta ;
 			placeHeadAtTail();
 		}
-
 	}	
 
 	return 0;

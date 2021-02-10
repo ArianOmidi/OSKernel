@@ -25,7 +25,7 @@ int addToRAM(FILE *p, int *start, int *end){
 
 	while (fgets(buffer, 999, p) != NULL){
 		// TODO Remove - For Testing
-		printf("%d\t:\t%s", k, buffer);
+		//printf("%d\t:\t%s", k, buffer);
 
 		if (k < RAM_SPACE && ram[k] == NULL) {
 			ram[k] = strdup(buffer);
