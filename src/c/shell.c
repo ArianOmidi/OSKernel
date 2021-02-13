@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int shellUI()
 {
@@ -12,15 +13,25 @@ int shellUI()
 
     shell_memory_initialize();
 
-    while (!feof(stdin))
-    {
-        printf("$ ");
-        fflush(stdout);
-
+    while (!feof(stdin)) {
         char *line = NULL;
         size_t linecap = 0;
-        if (getline(&line, &linecap, stdin) == -1)
-            break;
+	
+	printf("$ ");
+        fflush(stdout);
+
+        if (getline(&line, &linecap, stdin) == -1) {
+		// Redirect input to terminal if file is done
+		if (!isatty(STDIN_FILENO)){
+                	if (!freopen("/dev/tty", "r", stdin)) {
+                        	perror("/dev/tty");
+                        	exit(1);
+                	}
+			getline(&line, &linecap, stdin);
+		} else {
+			break;
+		}
+        }
 
         (void)interpret(line);
         free(line);

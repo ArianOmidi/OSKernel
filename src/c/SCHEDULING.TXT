@@ -1,0 +1,17 @@
+Scheduling:	
+	- quanta = 2
+		- CPU cycles elapsed: 20
+
+	- quanta = 5
+                - CPU cycles elapsed: 20
+
+	- quanta = 20
+                - CPU cycles elapsed: 20
+
+No System Calls:
+
+	- strcmp() -> line 90 in interpreter.c
+		- CPU cycles elapsed: 4
+	
+	- strlen() -> line 22 in shell.c
+		- CPU cycles elapsed: 5  
