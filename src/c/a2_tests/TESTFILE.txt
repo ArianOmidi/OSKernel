@@ -1,0 +1,21 @@
+help
+set x 10
+set y 20
+print x
+print y
+print z
+exec test2.txt test3.txt
+print x
+print y
+print z
+exec test1.txt test1.txt
+print x
+print y
+print z
+set x 0
+set y 0
+set z 0
+exec test1.txt test2.txt test3.txt
+exec testhuge1.txt testhuge2.txt
+exec testquit.txt
+quit

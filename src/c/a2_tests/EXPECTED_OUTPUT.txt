@@ -1,0 +1,41 @@
+
+----------------------------------
+Kernel 1.0 loaded!
+Welcome to the Your Name Goes Here Shell!
+Shell Version 2.0 Updated February 2020
+----------------------------------
+$-------------------------------------------------------------------------------------------------------
+COMMANDS			DESCRIPTIONS
+-------------------------------------------------------------------------------------------------------
+help				Displays all commands
+quit				Terminates the shell
+set VAR STRING			Assigns the value STRING to the shell memory variable VAR
+print VAR			Displays the STRING value assigned to the shell memory variable VAR
+run SCRIPT.TXT			Executes the file SCRIPT.txt
+exec p1 p2 p3			Executes programs p1 p2 p3 concurrently
+-------------------------------------------------------------------------------------------------------
+$$$10
+$20
+$Variable does not exist
+$|----------| 	STARTING CONCURRENT PROGRAMS ( test2.txt test3.txt )	|----------|
+200
+300
+|----------| 	TERMINATING ALL CONCURRENT PROGRAMS	|----------|
+$10
+$200
+$300
+$ERRORCODE -6 : test1.txt ALREADY LOADED 
+$10
+$200
+$300
+$$$$|----------| 	STARTING CONCURRENT PROGRAMS ( test1.txt test2.txt test3.txt )	|----------|
+100
+200
+300
+|----------| 	TERMINATING ALL CONCURRENT PROGRAMS	|----------|
+$ERRORCODE -5 : NOT ENOUGH RAM TO ADD PROGRAM.'testhuge2.txt'
+EXEC COMMAND ABORTED...
+$|----------| 	STARTING CONCURRENT PROGRAMS ( testquit.txt )	|----------|
+100
+200
+300
