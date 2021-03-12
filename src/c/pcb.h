@@ -23,7 +23,7 @@ PC = start
 start = start
 end = end
 */
-PCB* makePCB(int PID, int numOfPages);
+PCB* makePCB(int PID, int lastInstruction);
 
 void printPCB(PCB* pcb);
 

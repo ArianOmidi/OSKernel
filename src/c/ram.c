@@ -83,9 +83,13 @@ void printRAM() {
     if (ram[i] != NULL) {
       printf("\t%d -> \t", i / 4);
       printf("| %s", ram[i]);
-      printf("\t\t| %s", ram[i + 1]);
-      printf("\t\t| %s", ram[i + 2]);
-      printf("\t\t| %s", ram[i + 3]);
+
+      for (int j = 1; j < 4; j++) {
+        if (ram[i + j] == NULL)
+          printf("\t\t| %s\n", ram[i + j]);
+        else
+          printf("\t\t| %s", ram[i + j]);
+      }
     } else {
       printf("\t%d -> \t| %s | %s | %s | %s |\n", i / 4, ram[i], ram[i + 1],
              ram[i + 2], ram[i + 3]);

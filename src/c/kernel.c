@@ -128,11 +128,24 @@ int scheduler() {
   while (size() != 0) {
     // pop head of queue
     PCB* pcb = pop();
-    // copy PC of PCB to IP of CPU
-    CPU.IP = pcb->PC;
+    // get IP of CPU by looking up the frame in the PCB page table
+    // and adding the PC_offset of the PCB
+    CPU.IP = pcb->pageTable[pcb->PC_page] * PAGE_SIZE;
+    CPU.offest = pcb->PC_offset;
+
+    // TODO: TESTING - remove
+    printPCB(pcb);
+    printf("--> CPU - IP: %d, offset: %d\n", CPU.IP, CPU.offest);
+    if (pcb->pageTable[pcb->PC_page] * PAGE_SIZE < 0) {
+      printPCB(pcb);
+      printf("ERROR: PAGE NOT IN PAGE TABLE\n");
+      exit(1);
+    }
+    //
 
     int isOver = FALSE;
-    int remaining = 2;  // TODO: remove
+    int remaining = (pcb->pages_max + 1) * PAGE_SIZE - pcb->PC -
+                    1;  // TODO: calc remaining instructions
     int quanta = DEFAULT_QUANTA;
 
     if (DEFAULT_QUANTA >= remaining) {
@@ -142,12 +155,29 @@ int scheduler() {
 
     int errorCode = run(quanta);
 
-    if (errorCode != 0 || isOver) {
-      // TODO: fix
-      // removeFromRam(pcb->start, pcb->end);
+    // Page Fault Handling
+    if (errorCode == 10) {
+      pcb->PC_page++;
+
+      if (pcb->PC_page > pcb->pages_max) {
+        freeFrames(pcb);
+        free(pcb);
+      } else {
+        if (pcb->pageTable[pcb->PC_page] == -1) {
+          handlePageFault(pcb);
+        }
+
+        pcb->PC = pcb->PC_page * PAGE_SIZE;
+        pcb->PC_offset = 0;
+        addToReady(pcb);
+      }
+    } else if (errorCode < 0 || isOver) {
+      // TODO: test
+      freeFrames(pcb);
       free(pcb);
     } else {
       pcb->PC += DEFAULT_QUANTA;
+      pcb->PC_offset += DEFAULT_QUANTA;
       addToReady(pcb);
     }
   }

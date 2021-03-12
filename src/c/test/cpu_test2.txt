@@ -1,0 +1,13 @@
+set x a
+print x
+set y b
+print y
+set z c
+print z
+set x d
+print x
+set y e
+print y
+set z f
+print z
+set x g

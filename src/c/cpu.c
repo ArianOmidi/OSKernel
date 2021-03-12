@@ -10,6 +10,7 @@
 struct CPU {
   int IP;
   char IR[1000];
+  int offest;
   int quanta;
 } CPU;
 
@@ -19,7 +20,7 @@ It will then executes quanta number of lines in RAM as from the address
 pointed by the CPU IP.
 Returns an errorCode.
 */
-int run(int quanta, PCB *pcb) {
+int run(int quanta) {
   // If a quanta greater than the default quanta of 2 is passed,
   // run will instead execute only default quanta of lines.
   if (quanta > DEFAULT_QUANTA) {
@@ -27,19 +28,23 @@ int run(int quanta, PCB *pcb) {
   }
 
   for (int i = 0; i < quanta; i++) {
-    // If offset is greater than 4
-    strcpy(CPU.IR, ram[CPU.IP]);
+    if (ram[CPU.IP + CPU.offest] == NULL) return -10;
+
+    strcpy(CPU.IR, ram[CPU.IP + CPU.offest]);
     int errorCode = parse(CPU.IR);
     // Do error checking and if error, return error
     if (errorCode != 0) {
       // Display error message if fatal
       if (errorCode < 0) {
-        ram[CPU.IP][strlen(ram[CPU.IP]) - 2] = '\0';
-        displayCode(errorCode, ram[CPU.IP]);
+        ram[CPU.IP + CPU.offest][strlen(ram[CPU.IP + CPU.offest]) - 2] = '\0';
+        displayCode(errorCode, ram[CPU.IP + CPU.offest]);
       }
       return errorCode;
     }
-    CPU.IP++;
+
+    CPU.offest++;
+    // If offset is greater than 4, throw page fault
+    if (CPU.offest >= 4) return 10;
   }
   return 0;
 }

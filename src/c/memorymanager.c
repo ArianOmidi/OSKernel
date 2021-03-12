@@ -46,6 +46,15 @@ void initFrameQueue() {
   }
 }
 
+void freeFrames(PCB *pcb) {
+  for (int i = 0; i < pcb->pages_max; i++) {
+    if (pcb->pageTable[i] != -1) {
+      addFreeFrame(pcb->pageTable[i]);
+      pcb->pageTable[i] = -1;
+    }
+  }
+}
+
 int findFrame() {
   Frame *tmp = frameQueue->head;
 
@@ -76,20 +85,20 @@ FILE *copyFile(FILE *src, char *path) {
 }
 
 int countTotalPages(FILE *f) {
-  int lines = 0;
+  int numOfLines = 0;
 
   // Get total number of lines
   rewind(f);
   char c = fgetc(f);
   while (c != EOF) {
     if (c == '\n') {
-      lines++;
+      numOfLines++;
     }
     c = fgetc(f);
   }
 
-  printf("\nnum of lines %d\n", lines);
-  return lines / PAGE_SIZE + 1;
+  printf("\nnum of lines %d\n", numOfLines);
+  return numOfLines / PAGE_SIZE + 1;
 }
 
 void loadPage(int pageNumber, FILE *f, int frameNumber) {
@@ -103,13 +112,9 @@ void loadPage(int pageNumber, FILE *f, int frameNumber) {
       continue;
     } else if (pageIndex < (pageNumber + 1) * PAGE_SIZE) {
       ram[frameNumber * PAGE_SIZE + frameIndex] = strdup(buffer);
-      printf("- frame: %d, findex: %d, index: %d -> %s -> %s", frameNumber,
-             frameIndex, frameNumber * PAGE_SIZE + frameIndex, buffer,
-             ram[frameNumber * PAGE_SIZE + frameIndex]);
       frameIndex++;
       pageIndex++;
     } else {
-      printf("\n");
       break;
     }
   }
@@ -144,6 +149,27 @@ void updatePageTable(PCB *p, int pageNumber, int frameNumber, int victimFrame) {
   }
 }
 
+int handlePageFault(PCB *pcb) {
+  int frameNum, victimFrame;
+  char programName[200];
+  sprintf(programName, "BackingStore/program%d.txt", pcb->PID);
+
+  FILE *f = fopen(programName, "r");
+  if (f == NULL) return -3;
+
+  frameNum = findFrame();
+  if (frameNum == -1) {
+    victimFrame = findVictim(pcb);
+    loadPage(pcb->PC_page, f, victimFrame);
+    updatePageTable(pcb, pcb->PC_page, -1, victimFrame);
+  } else {
+    loadPage(pcb->PC_page, f, frameNum);
+    updatePageTable(pcb, pcb->PC_page, frameNum, -1);
+  }
+
+  return 0;
+}
+
 // -- MAIN LAUNCHER -- //
 
 int launcher(FILE *p) {
@@ -152,7 +178,7 @@ int launcher(FILE *p) {
   fclose(p);
 
   // Check if copy was created
-  if (f == NULL) return -5;
+  if (f == NULL) return 0;
 
   // Create a PCB and add to ReadyList
   PCB *pcb = makePCB(programId, countTotalPages(f));
@@ -176,12 +202,8 @@ int launcher(FILE *p) {
     }
   }
 
-  for (int i = 32; i < 40; i++) {
-    printf("%s, ", ram[i]);
-  }
-
   printPCB(pcb);
   printRAM();
 
-  return 0;
+  return 1;
 }

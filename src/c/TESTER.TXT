@@ -1,1 +1,2 @@
-exec test/script2.txt
+exec test/cpu_test1.txt test/cpu_test2.txt 
+quit
