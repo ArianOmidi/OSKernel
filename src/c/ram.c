@@ -77,7 +77,7 @@ void initRAM() {
 
 // TODO: for debugging
 void printRAM() {
-  printf("\n\t-------------------- RAM --------------------\n");
+  printf("\n\t-------------------- RAM --------------------\n\n");
 
   for (int i = 0; i < 40; i += 4) {
     if (ram[i] != NULL) {
@@ -90,8 +90,9 @@ void printRAM() {
         else
           printf("\t\t| %s", ram[i + j]);
       }
+      printf("\n");
     } else {
-      printf("\t%d -> \t| %s | %s | %s | %s |\n", i / 4, ram[i], ram[i + 1],
+      printf("\t%d -> \t| %s | %s | %s | %s |\n\n", i / 4, ram[i], ram[i + 1],
              ram[i + 2], ram[i + 3]);
     }
   }

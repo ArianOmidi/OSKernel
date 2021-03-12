@@ -2,6 +2,14 @@
 #define KERNEL_H
 
 #include "pcb.h"
+
+typedef struct ReadyQueueNode {
+  PCB* PCB;
+  struct ReadyQueueNode* next;
+} ReadyQueueNode;
+
+ReadyQueueNode* head;
+
 /*
 Adds a pcb to the tail of the linked list
 */

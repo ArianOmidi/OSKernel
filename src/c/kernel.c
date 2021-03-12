@@ -134,10 +134,10 @@ int scheduler() {
     CPU.offest = pcb->PC_offset;
 
     // TODO: TESTING - remove
+    printRAM();
     printPCB(pcb);
     printf("--> CPU - IP: %d, offset: %d\n", CPU.IP, CPU.offest);
     if (pcb->pageTable[pcb->PC_page] * PAGE_SIZE < 0) {
-      printPCB(pcb);
       printf("ERROR: PAGE NOT IN PAGE TABLE\n");
       exit(1);
     }

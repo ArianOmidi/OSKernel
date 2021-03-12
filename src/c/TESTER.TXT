@@ -1,2 +1,2 @@
-exec test/cpu_test1.txt test/cpu_test2.txt 
+exec test/cpu_test1.txt test/cpu_test2.txt test/cpu_test3.txt 
 quit
