@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define RAM_SIZE 40
+#define PAGE_SIZE 4
 
 /*
 Stores the index of the next available block of cell
@@ -13,6 +15,40 @@ Ram structure implemented as an array.
 Size is 40 strings
 */
 char *ram[RAM_SIZE];
+
+/*
+FIFO Free Frame Queue and functions
+*/
+typedef struct Frame {
+  int frameNumber;
+  struct Frame *next;
+} Frame;
+
+typedef struct FrameQueue {
+  Frame *head;
+  int size;
+} FrameQueue;
+
+FrameQueue *frameQueue;
+
+void addFreeFrame(int i) {
+  Frame *tmp = (Frame *)malloc(sizeof(Frame));
+  tmp->frameNumber = i;
+
+  tmp->next = frameQueue->head;
+  frameQueue->head = tmp;
+  frameQueue->size++;
+}
+
+int getFreeFrame() {
+  Frame *tmp = frameQueue->head;
+
+  if (tmp == NULL) return -1;
+
+  frameQueue->head = frameQueue->head->next;
+  frameQueue->size--;
+  return tmp->frameNumber;
+}
 
 /*
 This function will delete the content in ram between the 2 indices parameters
@@ -67,3 +103,19 @@ void addToRAM(FILE *p, int *start, int *end) {
 Reset the pointer to the free cell back to index 0 and set all memory to NULL
 */
 void resetRAM() { nextFree = 0; }
+
+void initRAM() {
+  // init the Frame Queue
+  frameQueue = (FrameQueue *)malloc(sizeof(FrameQueue));
+  frameQueue->head = NULL;
+  frameQueue->size = 0;
+
+  // Add free frames to queue
+  for (int i = 0; i < RAM_SIZE / PAGE_SIZE; i++) {
+    addFreeFrame(i);
+  }
+
+  // Clear RAM
+  removeFromRam(0, RAM_SIZE - 1);
+  resetRAM();
+}

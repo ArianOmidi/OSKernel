@@ -29,8 +29,7 @@ Boot Sequence
 */
 void boot() {
   // Init RAM to NULL
-  removeFromRam(0, RAM_SIZE);
-  resetRAM();
+  initRAM();
 
   // Init Backing Store
   system("rm -r BackingStore");

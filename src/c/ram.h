@@ -31,3 +31,13 @@ void removeFromRam(int, int);
 Reset the pointer to the free cell back to index 0
 */
 void resetRAM();
+
+/*
+Init RAM
+*/
+void initRAM();
+
+/*
+Get next free frame
+*/
+int getFreeFrame();

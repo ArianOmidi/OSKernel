@@ -97,11 +97,11 @@ int exec(char* words[]) {
     if (strcmp(words[i], "_NONE_") != 0) {
       filename[nextFree] = strdup(words[i]);
       nextFree++;
-      errorCode = myinit(words[i]);
+      // errorCode = myinit(words[i]);
 
       // TODO: remove
       FILE* p = fopen(words[i], "r");
-      if (p == NULL) return 1;
+      if (p == NULL) return -3;
       errorCode = launcher(p);
 
       if (errorCode < 0) {
