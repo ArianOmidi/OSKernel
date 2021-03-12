@@ -125,6 +125,7 @@ int scheduler() {
   // set CPU quanta to default, IP to -1, IR = NULL
   CPU.quanta = DEFAULT_QUANTA;
   CPU.IP = -1;
+
   while (size() != 0) {
     // pop head of queue
     PCB* pcb = pop();
@@ -134,10 +135,12 @@ int scheduler() {
     CPU.offest = pcb->PC_offset;
 
     // TODO: TESTING - remove
-    printRAM();
-    printPCB(pcb);
-    printf("--> CPU - IP: %d, offset: %d\n", CPU.IP, CPU.offest);
-    if (pcb->pageTable[pcb->PC_page] * PAGE_SIZE < 0) {
+    // printRAM();
+    // printPCB(pcb);
+    // printf("--> CPU - IP: %d, offset: %d\n", CPU.IP, CPU.offest);
+    if (pcb->pageTable[pcb->PC_page] < 0) {
+      printRAM();
+      printPCB(pcb);
       printf("ERROR: PAGE NOT IN PAGE TABLE\n");
       exit(1);
     }
@@ -159,7 +162,7 @@ int scheduler() {
     if (errorCode == 10) {
       pcb->PC_page++;
 
-      if (pcb->PC_page > pcb->pages_max) {
+      if (pcb->PC_page >= pcb->pages_max) {
         freeFrames(pcb);
         free(pcb);
       } else {
@@ -181,8 +184,9 @@ int scheduler() {
       addToReady(pcb);
     }
   }
-  // reset RAM
+  // reset RAM and FIFO Queue
   resetRAM();
+  initFrameQueue();
   return 0;
 }
 

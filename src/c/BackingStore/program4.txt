@@ -1,0 +1,40 @@
+set x1 1
+print x1
+set y1 2
+print y1
+set z1 3
+print z1
+set x1 4
+print x1
+set y1 5
+print y1
+set z1 6
+print z1
+set x1 7
+print x1
+set y1 8
+print y1
+set z1 9
+print z1
+set z1 10
+print z1
+set x1 11
+print x1
+set y1 12
+print y1
+set z1 13
+print z1
+set x1 14
+print x1
+set y1 15
+print y1
+set z1 16
+print z1
+set x1 17
+print x1
+set y1 18
+print y1
+set z1 19
+print z1
+set x1 20
+print x1

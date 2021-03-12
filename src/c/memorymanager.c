@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "kernel.h"
 #include "pcb.h"
@@ -67,6 +68,19 @@ int findFrame() {
   return tmp->frameNumber;
 }
 
+// TODO: remove
+// void printFrameQueue() {
+//   Frame *tmp = frameQueue->head;
+
+//   printf("\n#### FRAME QUEUE ####\n");
+//   printf("[");
+//   while (tmp != NULL) {
+//     printf(" %d,", tmp->frameNumber);
+//     tmp = tmp->next;
+//   }
+//   printf("[");
+// }
+
 // -- HELPER METHODS -- //
 
 FILE *copyFile(FILE *src, char *path) {
@@ -99,7 +113,6 @@ int countTotalPages(FILE *f) {
     c = fgetc(f);
   }
 
-  printf("\nnum of lines %d\n", numOfLines);
   return numOfLines / PAGE_SIZE + 1;
 }
 
@@ -139,6 +152,20 @@ int findVictim(PCB *p) {
         break;
       }
     }
+
+    ReadyQueueNode *tmp = head;
+    PCB *victim;
+
+    // if victim is currently using page continue
+    while (tmp != NULL) {
+      victim = tmp->PCB;
+      if (victim->pageTable[victim->PC_page] == randomFrame) {
+        randomFrame = (randomFrame + 1) % (RAM_SIZE / PAGE_SIZE);
+        isInvalidPage = 1;
+        break;
+      }
+      tmp = tmp->next;
+    }
   } while (isInvalidPage == 1 && counter <= (RAM_SIZE / PAGE_SIZE));
 
   return randomFrame;
@@ -148,20 +175,15 @@ void updatePageTable(PCB *p, int pageNumber, int frameNumber, int victimFrame) {
   if (frameNumber >= 0) {
     p->pageTable[pageNumber] = frameNumber;
   } else {
-    PCB *victim;
     ReadyQueueNode *tmp = head;
+    PCB *victim = p;
 
-    for (int i = 0; i < size(); i++) {
+    // update victim page table
+    while (tmp != NULL) {
       victim = tmp->PCB;
-
       for (int j = 0; j < 10; j++) {
-        if (victim->pageTable[i] == victimFrame) {
-          printf("################ VICTIM ##############\n");
-          printPCB(victim);
-
-          victim->pageTable[i] = -1;
-          printPCB(victim);
-          printf("###################################\n");
+        if (victim->pageTable[j] == victimFrame) {
+          victim->pageTable[j] = -1;
           break;
         }
       }
@@ -183,25 +205,8 @@ int handlePageFault(PCB *pcb) {
   frameNum = findFrame();
   if (frameNum == -1) {
     victimFrame = findVictim(pcb);
-
-    printf("###################################\n");
-    printf("\t -> Open Frame: %d, Victim Frame: %d\n", frameNum, victimFrame);
-
-    printf("################ BEFORE ##############\n");
-    printRAM();
-    printf("###################################\n");
     loadPage(pcb->PC_page, f, victimFrame);
-    printf("################ AFTER ##############\n");
-    printRAM();
-    printf("###################################\n");
-
-    printf("################ BEFORE ##############\n");
-    printPCB(pcb);
-    printf("###################################\n");
     updatePageTable(pcb, pcb->PC_page, -1, victimFrame);
-    printf("################ AFTER ##############\n");
-    printPCB(pcb);
-    printf("###################################\n");
   } else {
     loadPage(pcb->PC_page, f, frameNum);
     updatePageTable(pcb, pcb->PC_page, frameNum, -1);
@@ -231,9 +236,6 @@ int launcher(FILE *p) {
     loadPage(i, f, frameNum);
     updatePageTable(pcb, i, frameNum, -1);
   }
-
-  printPCB(pcb);
-  printRAM();
 
   return 1;
 }
