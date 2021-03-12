@@ -4,6 +4,7 @@
 
 #include "cpu.h"
 #include "interpreter.h"
+#include "memorymanager.h"
 #include "pcb.h"
 #include "ram.h"
 #include "shell.h"
@@ -28,8 +29,9 @@ int sizeOfQueue = 0;
 Boot Sequence
 */
 void boot() {
-  // Init RAM to NULL
+  // Init RAM and FIFO Frame Queue
   initRAM();
+  initFrameQueue();
 
   // Init Backing Store
   system("rm -r BackingStore");

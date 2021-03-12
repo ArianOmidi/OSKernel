@@ -6,13 +6,59 @@
 
 #define PAGE_SIZE 4
 
-int programNum = 0;
+int programId = 0;
+
+/*
+FIFO Free Frame Queue and functions
+*/
+typedef struct Frame {
+  int frameNumber;
+  struct Frame *next;
+} Frame;
+
+typedef struct FrameQueue {
+  Frame *head;
+  int size;
+} FrameQueue;
+
+FrameQueue *frameQueue;
+
+void addFreeFrame(int i) {
+  Frame *tmp = (Frame *)malloc(sizeof(Frame));
+  tmp->frameNumber = i;
+
+  tmp->next = frameQueue->head;
+  frameQueue->head = tmp;
+  frameQueue->size++;
+}
+
+void initFrameQueue() {
+  // init the Frame Queue
+  frameQueue = (FrameQueue *)malloc(sizeof(FrameQueue));
+  frameQueue->head = NULL;
+  frameQueue->size = 0;
+
+  // Add free frames to queue
+  for (int i = 0; i < RAM_SIZE / PAGE_SIZE; i++) {
+    addFreeFrame(i);
+  }
+}
+
+int findFrame() {
+  Frame *tmp = frameQueue->head;
+
+  if (tmp == NULL) return -1;
+
+  frameQueue->head = frameQueue->head->next;
+  frameQueue->size--;
+  return tmp->frameNumber;
+}
 
 // -- HELPER METHODS -- //
 
 FILE *copyFile(FILE *src, char *path) {
   char programName[200];
-  sprintf(programName, "%s/program%d.txt", path, ++programNum);
+  sprintf(programName, "%s/program%d.txt", path, ++programId);
 
   FILE *copy = fopen(programName, "w+");
   if (copy == NULL) return NULL;
@@ -62,12 +108,13 @@ void loadPage(int pageNumber, FILE *f, int frameNumber) {
   }
 }
 
-int findFrame() {
-  for (int i = 0; i < RAM_SIZE / PAGE_SIZE; i++) {
-    if (ram[i * PAGE_SIZE] == NULL) return i;
-  }
-  return -1;
-}
+// TODO: REMOVE
+// int findFrame() {
+//   for (int i = 0; i < RAM_SIZE / PAGE_SIZE; i++) {
+//     if (ram[i * PAGE_SIZE] == NULL) return i;
+//   }
+//   return -1;
+// }
 
 // -- MAIN LAUNCHER -- //
 
