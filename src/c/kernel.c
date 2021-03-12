@@ -107,15 +107,17 @@ int myinit(char* filename) {
   // If error (check via start/end variable), return that error
   // Else create pcb using MakePCB
   // Then add it to the ReadyQueue
-  FILE* fp = fopen(filename, "r");
-  if (fp == NULL) return -3;
-  int start;
-  int end;
-  addToRAM(fp, &start, &end);
-  fclose(fp);
-  if (start == -1) return -5;
-  PCB* pcb = makePCB(start, end);
-  addToReady(pcb);
+
+  // TODO: remover
+  // FILE* fp = fopen(filename, "r");
+  // if (fp == NULL) return -3;
+  // int start;
+  // int end;
+  // addToRAM(fp, &start, &end);
+  // fclose(fp);
+  // if (start == -1) return -5;
+  // PCB* pcb = makePCB(start, end);
+  // addToReady(pcb);
   return 0;
 }
 
@@ -130,7 +132,7 @@ int scheduler() {
     CPU.IP = pcb->PC;
 
     int isOver = FALSE;
-    int remaining = (pcb->end) - (pcb->PC) + 1;
+    int remaining = 2;  // TODO: remove
     int quanta = DEFAULT_QUANTA;
 
     if (DEFAULT_QUANTA >= remaining) {
@@ -141,7 +143,8 @@ int scheduler() {
     int errorCode = run(quanta);
 
     if (errorCode != 0 || isOver) {
-      removeFromRam(pcb->start, pcb->end);
+      // TODO: fix
+      // removeFromRam(pcb->start, pcb->end);
       free(pcb);
     } else {
       pcb->PC += DEFAULT_QUANTA;

@@ -1,0 +1,1 @@
+exec test/script2.txt

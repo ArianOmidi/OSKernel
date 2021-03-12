@@ -74,3 +74,23 @@ void initRAM() {
   removeFromRam(0, RAM_SIZE - 1);
   resetRAM();
 }
+
+// TODO: for debugging
+void printRAM() {
+  printf("\n\t-------------------- RAM --------------------\n");
+
+  for (int i = 0; i < 40; i += 4) {
+    if (ram[i] != NULL) {
+      printf("\t%d -> \t", i / 4);
+      printf("| %s", ram[i]);
+      printf("\t\t| %s", ram[i + 1]);
+      printf("\t\t| %s", ram[i + 2]);
+      printf("\t\t| %s", ram[i + 3]);
+    } else {
+      printf("\t%d -> \t| %s | %s | %s | %s |\n", i / 4, ram[i], ram[i + 1],
+             ram[i + 2], ram[i + 3]);
+    }
+  }
+
+  printf("\t---------------------------------------------\n");
+}

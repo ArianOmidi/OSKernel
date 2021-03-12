@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "interpreter.h"
+#include "pcb.h"
 #include "ram.h"
 #include "shell.h"
 
@@ -18,7 +19,7 @@ It will then executes quanta number of lines in RAM as from the address
 pointed by the CPU IP.
 Returns an errorCode.
 */
-int run(int quanta) {
+int run(int quanta, PCB *pcb) {
   // If a quanta greater than the default quanta of 2 is passed,
   // run will instead execute only default quanta of lines.
   if (quanta > DEFAULT_QUANTA) {
@@ -26,6 +27,7 @@ int run(int quanta) {
   }
 
   for (int i = 0; i < quanta; i++) {
+    // If offset is greater than 4
     strcpy(CPU.IR, ram[CPU.IP]);
     int errorCode = parse(CPU.IR);
     // Do error checking and if error, return error

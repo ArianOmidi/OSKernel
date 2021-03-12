@@ -41,3 +41,5 @@ void initRAM();
 Get next free frame
 */
 int getFreeFrame();
+
+void printRAM();
