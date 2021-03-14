@@ -1,12 +1,17 @@
-print x
-set x 10
-print x
-set y 55
-print y
-set x 100
-print x
 help
-fuck
 
-help
-print y
+set cat Fenway
+set dog Murphy
+print cat 
+print dog
+
+set name Arian
+set dog Frank
+print dog
+
+print bird
+
+cd home
+ls -a  
+
+print name
