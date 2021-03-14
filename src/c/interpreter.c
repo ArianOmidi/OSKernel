@@ -103,7 +103,6 @@ int quit()
     return 0;
 }
 
-<<<<<<< HEAD
 static int run(const char *path)
 {
     FILE *file = fopen(path, "r");
@@ -261,95 +260,12 @@ int interpret(char *raw_input)
 
 	while (tokens[num_of_programs + 1] != NULL && num_of_programs < 3){
 		num_of_programs++;
-=======
-int set(int argc, char *argv[]){
-	if (argc != 3){
-                printf("Usage: set VAR STRING\n");
-                return 1;
-        }
-
-        int errorCode = setMEM(argv[1], argv[2]);
-
-        return errorCode;
-}
-
-int print(int argc, char *arg){
-	if (argc != 2){
-                printf("Usage: print VAR\n");
-                return 1;
-        }
-	
-	char* value = getMEMValue(arg);
-
-	if (value == NULL){
-		printf("Variable does not exist\n");
-		return 1;
-	}
-
-	printf("%s\n", value);
-
-	return 0;
-}
-
-int run(int argc, char* file){
-	if (argc != 2){
-                printf("Usage: run FILE\n");
-                return 1;
-        }
-
-	int errorCode = 0;
-	char line[1000];
-	FILE *p = fopen(file,"rt"); 
-
-	// Check if file exists
-	if (p == NULL){
-		printf("Script not found\n");
-		return 1;
-	}
-
-	fgets(line, 999, p);
-	while(!feof(p)){
-		errorCode = parse(line);
-		if (errorCode == -1){
-			fclose(p);
-			return errorCode;
-		}
-
-		fgets(line, 999, p);
-	}
-
-	fclose(p);
-	
-	return errorCode;
-}
-
-int interpreter(int numOfWords, char *words[]){
-	if (numOfWords == 0){
-		printf("Error: no command entered\n");
-		return 1;
->>>>>>> Finished setting ang print vars
 	}
 
 	char *filenames[num_of_programs];
 
-<<<<<<< HEAD
 	for (int i = 1; i <= num_of_programs; i++){
 		filenames[i - 1] = tokens[i];
-=======
-        if (strcmp(words[0], "quit") == 0) {
-		errorCode = quit();
-	} else if (strcmp(words[0], "help") == 0) {
-		errorCode = help();	
-	} else if (strcmp(words[0], "set") == 0) {
-                errorCode = set(numOfWords, words);
-        } else if (strcmp(words[0], "print") == 0) {
-                errorCode = print(numOfWords, words[1]);
-        } else if (strcmp(words[0], "run") == 0) {
-                errorCode = run(numOfWords, words[1]);
-        } else {
-		printf("Unknown command\n");
-		errorCode = 1;
->>>>>>> Finished setting ang print vars
 	}
 
         int result = exec(filenames, num_of_programs);
