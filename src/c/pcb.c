@@ -26,6 +26,7 @@ PCB *makePCB(int PID, int numOfPages) {
   return pcb;
 }
 
+// For debugging
 void printPCB(PCB *pcb) {
   printf("\n\t---------- PCB ----------\n");
   printf("\tPID: %d, PageCount: %d\n", pcb->PID, pcb->pages_max);

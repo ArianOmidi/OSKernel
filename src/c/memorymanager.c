@@ -68,18 +68,18 @@ int findFrame() {
   return tmp->frameNumber;
 }
 
-// TODO: remove
-// void printFrameQueue() {
-//   Frame *tmp = frameQueue->head;
+// For debugging
+void printFrameQueue() {
+  Frame *tmp = frameQueue->head;
 
-//   printf("\n#### FRAME QUEUE ####\n");
-//   printf("[");
-//   while (tmp != NULL) {
-//     printf(" %d,", tmp->frameNumber);
-//     tmp = tmp->next;
-//   }
-//   printf("[");
-// }
+  printf("\n#### FRAME QUEUE ####\n");
+  printf("[");
+  while (tmp != NULL) {
+    printf(" %d,", tmp->frameNumber);
+    tmp = tmp->next;
+  }
+  printf("[");
+}
 
 // -- HELPER METHODS -- //
 

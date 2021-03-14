@@ -75,7 +75,7 @@ void initRAM() {
   resetRAM();
 }
 
-// TODO: for debugging
+// For debugging
 void printRAM() {
   printf("\n\t-------------------- RAM --------------------\n\n");
 

@@ -34,7 +34,7 @@ void boot() {
   initFrameQueue();
 
   // Init Backing Store
-  system("rm -r BackingStore");
+  system("rm -rf BackingStore");
   system("mkdir BackingStore");
 }
 
@@ -91,36 +91,6 @@ struct PCB* pop() {
   return topNode;
 }
 
-/*
-Passes a filename
-Opens the file, copies the content in the RAM.
-Creates a PCB for that program.
-Adds the PCB on the ready queue.
-Return an errorCode:
-ERRORCODE 0 : NO ERROR
-ERRORCODE -3 : SCRIPT NOT FOUND
-ERRORCODE -5 : NOT ENOUGH RAM (EXEC)
-*/
-int myinit(char* filename) {
-  // Open the filename to get FILE *
-  // call addToRam on that File *
-  // If error (check via start/end variable), return that error
-  // Else create pcb using MakePCB
-  // Then add it to the ReadyQueue
-
-  // TODO: remover
-  // FILE* fp = fopen(filename, "r");
-  // if (fp == NULL) return -3;
-  // int start;
-  // int end;
-  // addToRAM(fp, &start, &end);
-  // fclose(fp);
-  // if (start == -1) return -5;
-  // PCB* pcb = makePCB(start, end);
-  // addToReady(pcb);
-  return 0;
-}
-
 int scheduler() {
   // set CPU quanta to default, IP to -1, IR = NULL
   CPU.quanta = DEFAULT_QUANTA;
@@ -134,21 +104,15 @@ int scheduler() {
     CPU.IP = pcb->pageTable[pcb->PC_page] * PAGE_SIZE;
     CPU.offest = pcb->PC_offset;
 
-    // TODO: TESTING - remove
-    // printRAM();
-    // printPCB(pcb);
-    // printf("--> CPU - IP: %d, offset: %d\n", CPU.IP, CPU.offest);
     if (pcb->pageTable[pcb->PC_page] < 0) {
       printRAM();
       printPCB(pcb);
       printf("ERROR: PAGE NOT IN PAGE TABLE\n");
       exit(1);
     }
-    //
 
     int isOver = FALSE;
-    int remaining = (pcb->pages_max + 1) * PAGE_SIZE - pcb->PC -
-                    1;  // TODO: calc remaining instructions
+    int remaining = (pcb->pages_max + 1) * PAGE_SIZE - pcb->PC - 1;
     int quanta = DEFAULT_QUANTA;
 
     if (DEFAULT_QUANTA >= remaining) {
@@ -175,7 +139,6 @@ int scheduler() {
         addToReady(pcb);
       }
     } else if (errorCode < 0 || isOver) {
-      // TODO: test
       freeFrames(pcb);
       free(pcb);
     } else {
