@@ -7,6 +7,8 @@ void clearRAM(int start, int end);
 
 void addToRAM(FILE *p, int *start, int *end);
 
-char* loadFromRAM(int address);
+char *loadFromRAM(int address);
+
+void printRAM();
 
 #endif

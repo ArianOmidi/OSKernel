@@ -269,6 +269,7 @@ int interpret(char *raw_input)
 	}
 
         int result = exec(filenames, num_of_programs);
+	
         free(tokens);
         return result;
     }

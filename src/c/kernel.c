@@ -89,38 +89,6 @@ void emptyReadyList(){
         }
 }
 
-void printReadyList(){
-	Node* node = readyList->head;
-
-	printf("\nReady List: %d PCBS\n", readyList->n);
-
-	if (readyList->n > 0){
-	printf("\tHead PCB: PC = %d, start = %d, end = %d\n", readyList->head->pcb->PC, readyList->head->pcb->start, readyList->head->pcb->end);
-	printf("\tTail PCB: PC = %d, start = %d, end = %d\n\n", readyList->tail->pcb->PC, readyList->tail->pcb->start, readyList->tail->pcb->end);
-
-	while(node != NULL){
-		printf("\tPCB: PC = %d, start = %d, end = %d\n", node->pcb->PC, node->pcb->start, node->pcb->end);
-		node = node->next;
-	}
-
-	printf("\n");
-	}
-}
-
-
-void printRAM(){
-	 printf("\nRAM: ALL NON-NULL LINES\n");
-	 char *data;
-	 for (int i = 0; i < 1000; i++){
-		data = loadFromRAM(i);
-
-		if (data != NULL)
-			printf("\t - %d\t : \t%s", i, data);
-	 }
-	 printf("\n");
-}
-
-
 
 // --- KERNEL FUNCTIONS --- //
 

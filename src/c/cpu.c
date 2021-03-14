@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define QUANTA 2
+
 typedef struct CPU {
 	int IP;
 	char IR[1000];
@@ -15,11 +17,11 @@ CPU* cpu;
 
 void initCPU(){
 	cpu = (CPU*) malloc(sizeof(CPU));
-	cpu->quanta = 2;	
+	cpu->quanta = QUANTA;	
 }
 
 int getQuanta(){
-	return cpu->quanta;
+	return QUANTA;
 }
 
 void setCPU(int IP){
