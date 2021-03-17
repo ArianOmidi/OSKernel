@@ -1,0 +1,17 @@
+help
+
+set cat Fenway
+set dog Murphy
+print cat 
+print dog
+
+set name Arian
+set dog Frank
+print dog
+
+print bird
+
+cd home
+ls -a  
+
+print name

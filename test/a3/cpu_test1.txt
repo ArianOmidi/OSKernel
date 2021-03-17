@@ -1,0 +1,18 @@
+set x1 10
+print x1
+set y1 20
+print y1
+set z1 30
+print z1
+set x1 40
+print x1
+set y1 50
+print y1
+set z1 60
+print z1
+set x1 70
+print x1
+set y1 80
+print y1
+set z1 90
+print z1

@@ -1,0 +1,42 @@
+
+----------------------------------
+Kernel 1.0 loaded!
+Welcome to the Arian Omidi Shell!
+Shell Version 2.0 Updated February 2020
+----------------------------------
+$ -------------------------------------------------------------------------------------------------------
+COMMANDS			DESCRIPTIONS
+-------------------------------------------------------------------------------------------------------
+help				Displays all commands
+quit				Terminates the shell
+set VAR STRING			Assigns the value STRING to the shell memory variable VAR
+print VAR			Displays the STRING value assigned to the shell memory variable VAR
+run SCRIPT.TXT			Executes the file SCRIPT.txt
+exec p1 p2 p3			Executes programs p1 p2 p3 concurrently
+-------------------------------------------------------------------------------------------------------
+$ $ $ $ Murphy
+$ Fenway
+$ Arian
+$ |----------| 	STARTING CONCURRENT PROGRAMS ( ../../test/a2/script3.txt ../../test/a2/script2.txt ../../test/a2/script1.txt )	|----------|
+30
+20
+10
+|----------| 	TERMINATING ALL CONCURRENT PROGRAMS	|----------|
+$ |----------| 	STARTING CONCURRENT PROGRAMS ( ../../test/a2/script3.txt ../../test/a2/script3.txt )	|----------|
+30
+30
+|----------| 	TERMINATING ALL CONCURRENT PROGRAMS	|----------|
+$ ERRORCODE -3 : SCRIPT NOT FOUND
+$ |----------| 	STARTING CONCURRENT PROGRAMS ( ../../test/a2/script3.txt ../../test/a2/script2.txt ../../test/a2/sched2.txt )	|----------|
+30
+20
+30
+20
+a2
+b2
+c2
+d2
+|----------| 	TERMINATING ALL CONCURRENT PROGRAMS	|----------|
+$ Fenway
+$ 10
+$ 

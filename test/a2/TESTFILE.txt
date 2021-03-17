@@ -1,0 +1,14 @@
+help
+set dog Murphy
+set cat Fenway
+set name Arian Omidi
+print dog
+print cat
+print name
+exec ../../test/a2/script3.txt ../../test/a2/script2.txt ../../test/a2/script1.txt
+exec ../../test/a2/script3.txt ../../test/a2/script3.txt
+exec ../../test/a2/script3.txt ../../test/a2/script2.txt notafile.txt
+exec ../../test/a2/script3.txt ../../test/a2/script2.txt ../../test/a2/sched2.txt
+print cat
+print x
+quit

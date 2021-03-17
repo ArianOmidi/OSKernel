@@ -1,0 +1,5 @@
+exec ../../test/a3/cpu_test1.txt ../../test/a3/cpu_test2.txt ../../test/a3/cpu_test3.txt 
+exec ../../test/a3/longtest1.txt ../../test/a3/longtest2.txt 
+exec ../../test/a3/longtest1.txt ../../test/a3/longtest1.txt 
+exec ../../test/a3/cpu_test2.txt ../../test/a3/cpu_test2.txt ../../test/a3/cpu_test2.txt
+quit
