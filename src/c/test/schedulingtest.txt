@@ -1,5 +1,0 @@
-exec sched1.txt sched2.txt sched3.txt
-exec sched1.txt sched2.txt sched3.txt
-exec sched1.txt sched2.txt sched3.txt
-exec sched1.txt sched2.txt sched3.txt
-exec sched1.txt sched2.txt sched3.txt

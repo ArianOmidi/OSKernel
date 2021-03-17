@@ -1,80 +1,76 @@
-#include "shellmemory.h"
-
-#include <stdint.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-typedef struct
-{
-    char *key;
-    char *value;
-} mem_t;
+struct MEM {
+  char* var;
+  char* value;
+} environmentVars[25];
 
-#define MEM_LENGTH 100
-mem_t memory[MEM_LENGTH];
+// restricts number of environment variables to 25
+int memorySize = 25;
 
-void shell_memory_initialize()
-{
-    for (size_t i = 0; i < MEM_LENGTH; ++i)
-    {
-        memory[i].key = NULL;
-        memory[i].value = NULL;
+// This global variable stores the index of the last stored variable. Set to 0
+// at first. Its limit is the memory size
+int lastVarIndex = 0;
+
+/*
+This function passes the name of a variable.
+It will search the array of environment variables for an exact variable name
+match. If found, it returns the index of the matched variable. If not found, it
+returns -1
+*/
+int findVariable(char* varName) {
+  for (int i = 0; i < lastVarIndex; i++) {
+    if (strcmp(environmentVars[i].var, varName) == 0) {
+      return i;
     }
+  }
+  return -1;
 }
 
-void shell_memory_destory()
-{
-    for (size_t i = 0; i < MEM_LENGTH; ++i)
-    {
-        if (memory[i].key != NULL)
-            free(memory[i].key);
-        if (memory[i].value != NULL)
-            free(memory[i].value);
-    }
+/*
+This functions takes a variable name and a value and adds this set packaged in a
+MEM object at the end of the shell memory array. It also increments the
+lastVarIndex global variable. If running out of memory, return ERRORCODE: -1
+*/
+int addVariable(char* var, char* value) {
+  if (lastVarIndex == memorySize) return -1;
+  environmentVars[lastVarIndex].var = var;
+  environmentVars[lastVarIndex].value = value;
+  lastVarIndex++;
+  return 0;
 }
 
-const char *shell_memory_get(const char *key)
-{
-    for (size_t i = 0; i < MEM_LENGTH; ++i)
-    {
-        if (memory[i].key == NULL)
-            continue;
-        if (strcmp(memory[i].key, key) == 0)
-            return memory[i].value;
-    }
-    return NULL;
+/*
+This functions takes a variable name and value.
+It assigns the value argument to the environment variable varName in the shell
+memory array. Return ERRORCODE -1 if out of memory else 0
+*/
+int setVariable(char* varName, char* value) {
+  // Find the position of the variable in the array
+  int position = findVariable(varName);
+
+  if (position == -1) {
+    // if the variable is not found, try add this variable to the memory
+    return addVariable(varName, value);
+  } else {
+    // overwrite the value of the variable
+    // strcpy( environmentVars[position].value , value) ;
+    environmentVars[position].value = value;
+  }
+
+  return 0;
 }
 
-int shell_memory_set(const char *key, const char *value)
-{
-    for (size_t i = 0; i < MEM_LENGTH; ++i)
-    {
-        if (memory[i].key == NULL)
-            continue;
-        if (strcmp(memory[i].key, key) == 0)
-        {
-            free(memory[i].value);
-            memory[i].value = strdup(value);
-            return 0;
-        }
-    }
-    size_t possible_slot = MEM_LENGTH;
-    for (size_t i = 0; i < MEM_LENGTH; ++i)
-    {
-        if (memory[i].key == NULL && memory[i].value == NULL)
-        {
-            possible_slot = i;
-            break;
-        }
-    }
-    if (possible_slot == MEM_LENGTH)
-    {
-        return -1;
-    }
-    else
-    {
-        memory[possible_slot].key = strdup(key);
-        memory[possible_slot].value = strdup(value);
-        return 0;
-    }
+/*
+This function passes a variable name.
+The memory shell array is searched for that variable name.
+If found, it return the value,
+If not found, it return "NONE"
+*/
+char* getValue(char* var) {
+  int position = findVariable(var);
+  if (position == -1) return "_NONE_";
+  return environmentVars[position].value;
 }

@@ -1,8 +1,0 @@
-set a a3
-set b b3
-set c c3
-set d d3
-print a
-print b
-print c
-print d

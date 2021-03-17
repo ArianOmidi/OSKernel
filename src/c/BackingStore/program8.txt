@@ -1,0 +1,14 @@
+set x2 a
+print x2
+set y2 b
+print y2
+set z2 c
+print z2
+set x2 d
+print x2
+set y2 e
+print y2
+set z2 f
+print z2
+set x2 g
+print x2

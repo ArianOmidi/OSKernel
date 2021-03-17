@@ -1,162 +1,167 @@
-#include "shell.h"
-#include "ram.h"
-#include "pcb.h"
-#include "cpu.h"
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-// --- READY LIST FUNCTIONS --- //
+#include "cpu.h"
+#include "interpreter.h"
+#include "memorymanager.h"
+#include "pcb.h"
+#include "ram.h"
+#include "shell.h"
 
-typedef struct Node{
-	PCB* pcb;
-	struct Node* next;
-} Node;
+/*
+This is a node in the Ready Queue implemented as
+a linked list.
+A node holds a PCB pointer and a pointer to the next node.
+PCB: PCB
+next: next node
+*/
+typedef struct ReadyQueueNode {
+  PCB* PCB;
+  struct ReadyQueueNode* next;
+} ReadyQueueNode;
 
-typedef struct ReadyList{
-	Node* head;
-	Node* tail;
-	int n;
-} ReadyList;
+ReadyQueueNode* head = NULL;
+ReadyQueueNode* tail = NULL;
+int sizeOfQueue = 0;
 
-ReadyList *readyList;
+/*
+Boot Sequence
+*/
+void boot() {
+  // Init RAM and FIFO Frame Queue
+  initRAM();
+  initFrameQueue();
 
-void initReadyList(){
-	ReadyList* rl = (ReadyList*) malloc(sizeof(ReadyList));
-	rl->head = NULL;
-	rl->tail = NULL;
-	rl->n = 0;
-
-	readyList = rl;
+  // Init Backing Store
+  system("rm -rf BackingStore");
+  system("mkdir BackingStore");
 }
 
-int addToReady(PCB* pcb){
-	Node* tmp = (Node*) malloc(sizeof(Node));
-	
-	if (tmp == NULL){
-		printf("Couldn't allocate memory for ReadyList Node\n");
-		return 1;
-	}
+/*
+Kernel Procedure
+*/
+int kernel() { return shellUI(); }
 
-	tmp->pcb = pcb;
-	tmp->next = NULL;
-
-	if (readyList->n == 0){
-	       readyList->head = tmp;
-	} else {
-		readyList->tail->next = tmp;	
-	}
-	readyList->tail = tmp;
-
-	readyList->n++;
-	
-	return 0;
+int main(int argc, char const* argv[]) {
+  int error = 0;
+  boot();            // First : actions performed by boot
+  error = kernel();  // Second: actions performed by kernel
+  return error;
 }
 
-void placeHeadAtTail(){
-	if (readyList->n > 1){
-		Node* tmp = readyList->head;
-		readyList->tail->next = tmp;
-		readyList->head = tmp->next;
-		readyList->tail = tmp;
-		tmp->next = NULL; 
-	}
+/*
+Adds a pcb to the tail of the linked list
+*/
+void addToReady(struct PCB* pcb) {
+  ReadyQueueNode* newNode = (ReadyQueueNode*)malloc(sizeof(ReadyQueueNode));
+  newNode->PCB = pcb;
+  newNode->next = NULL;
+  if (head == NULL) {
+    head = newNode;
+    tail = newNode;
+  } else {
+    tail->next = newNode;
+    tail = newNode;
+  }
+  sizeOfQueue++;
 }
 
-void removePCB(){
-	if (readyList->n == 0)
-		return;
+/*
+Returns the size of the queue
+*/
+int size() { return sizeOfQueue; }
 
-	PCB* pcb = readyList->head->pcb;
-	Node* tmp = readyList->head;
-
-	clearRAM(pcb->start, pcb->end);
-
-	readyList->head = tmp->next;
-	if (readyList->n == 1) {
-		readyList->head = NULL;
-		readyList->tail = NULL;
-	}
-	readyList->n = readyList->n - 1;
-
-	free(tmp);
-	free(pcb);
+/*
+Pops the pcb at the head of the linked list.
+pop will cause an error if linkedlist is empty.
+Always check size of queue using size()
+*/
+struct PCB* pop() {
+  PCB* topNode = head->PCB;
+  ReadyQueueNode* temp = head;
+  if (head == tail) {
+    head = NULL;
+    tail = NULL;
+  } else {
+    head = head->next;
+  }
+  free(temp);
+  sizeOfQueue--;
+  return topNode;
 }
 
-void emptyReadyList(){
-        while (readyList->head != NULL){
-                removePCB();
+int scheduler() {
+  // set CPU quanta to default, IP to -1, IR = NULL
+  CPU.quanta = DEFAULT_QUANTA;
+  CPU.IP = -1;
+
+  while (size() != 0) {
+    // pop head of queue
+    PCB* pcb = pop();
+    // get IP of CPU by looking up the frame in the PCB page table
+    // and adding the PC_offset of the PCB
+    CPU.IP = pcb->pageTable[pcb->PC_page] * PAGE_SIZE;
+    CPU.offest = pcb->PC_offset;
+
+    if (pcb->pageTable[pcb->PC_page] < 0) {
+      printRAM();
+      printPCB(pcb);
+      printf("ERROR: PAGE NOT IN PAGE TABLE\n");
+      exit(1);
+    }
+
+    int isOver = FALSE;
+    int remaining = (pcb->pages_max + 1) * PAGE_SIZE - pcb->PC - 1;
+    int quanta = DEFAULT_QUANTA;
+
+    if (DEFAULT_QUANTA >= remaining) {
+      isOver = TRUE;
+      quanta = remaining;
+    }
+
+    int errorCode = run(quanta);
+
+    // Page Fault Handling
+    if (errorCode == 10) {
+      pcb->PC_page++;
+
+      if (pcb->PC_page >= pcb->pages_max) {
+        freeFrames(pcb);
+        free(pcb);
+      } else {
+        if (pcb->pageTable[pcb->PC_page] == -1) {
+          handlePageFault(pcb);
         }
+
+        pcb->PC = pcb->PC_page * PAGE_SIZE;
+        pcb->PC_offset = 0;
+        addToReady(pcb);
+      }
+    } else if (errorCode < 0 || isOver) {
+      freeFrames(pcb);
+      free(pcb);
+    } else {
+      pcb->PC += DEFAULT_QUANTA;
+      pcb->PC_offset += DEFAULT_QUANTA;
+      addToReady(pcb);
+    }
+  }
+  // reset RAM and FIFO Queue
+  resetRAM();
+  initFrameQueue();
+  return 0;
 }
 
-
-// --- KERNEL FUNCTIONS --- //
-
-int myinit(char *filename){
-        FILE *program = fopen(filename, "r");
-        if (program == NULL){
-                printf("Error: Script %s does not exist\n", filename);
-		emptyReadyList();
-                return 1;
-        }
-
-	int start, end;
-
-	// Add File to RAM
-	addToRAM(program, &start, &end);
-	fclose(program);
-	if (end < 0) {
-		emptyReadyList();
-		return 1;
-	}
-
-	// Make PCB
-	PCB* pcb = makePCB(start, end);
-	if (pcb == NULL){
-		printf("ERROR: unable to create PCB for program %s\n", filename);
- 		emptyReadyList();
-                return 1;
-	}
-
-	// Add PCB to Ready List
-	addToReady(pcb);
-	
-        return 0;
+/*
+Flushes every pcb off the ready queue in the case of a load error
+*/
+void emptyReadyQueue() {
+  while (head != NULL) {
+    ReadyQueueNode* temp = head;
+    head = head->next;
+    free(temp->PCB);
+    free(temp);
+  }
+  sizeOfQueue = 0;
 }
-
-int scheduler(){
-	int errorCode;
-	int quanta = getQuanta();
-	
-	while (readyList->n > 0){
-		// Set CPU IP to the PC	
-		setCPU(readyList->head->pcb->PC);
-		
-		// If the program executes in under a quanta, give it the amount of CPU time it needs
-		// to complete the program then remove the PCB from the Ready List
-		// Else compute quanta lines and add PCB to tail of Ready List
-		if (quanta > readyList->head->pcb->end - readyList->head->pcb->PC){
-		 	errorCode = run(readyList->head->pcb->end - readyList->head->pcb->PC + 1);
-			removePCB();
-		} else {
-			errorCode = run(quanta);
-			readyList->head->pcb->PC += quanta ;
-                        placeHeadAtTail();
-		}
-	}
-	
-	emptyRAM();
-	return 0;
-}
-
-int main(int argc, char* argv[]){
-	// Init RAM, CPU & Ready List
-	emptyRAM();
-	initCPU();
-	initReadyList();
-
-	printf("Kernel 1.0 loaded!\n");
-	shellUI();
-}
-
-

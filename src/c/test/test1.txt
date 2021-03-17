@@ -1,7 +1,0 @@
-help
-
-set dog Murphy
-set name Arian
-
-print dog
-print name
