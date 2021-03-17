@@ -25,6 +25,9 @@ end = end
 */
 PCB* makePCB(int PID, int lastInstruction);
 
+/*
+For degugging purposes
+*/
 void printPCB(PCB* pcb);
 
 #endif

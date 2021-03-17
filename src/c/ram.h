@@ -1,3 +1,6 @@
+#ifndef RAM_H
+#define RAM_H
+
 #include <stdio.h>
 
 #define RAM_SIZE 40
@@ -42,4 +45,9 @@ Get next free frame
 */
 int getFreeFrame();
 
+/*
+For degugging purposes
+*/
 void printRAM();
+
+#endif

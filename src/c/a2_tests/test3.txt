@@ -1,2 +1,0 @@
-set z 300
-print z

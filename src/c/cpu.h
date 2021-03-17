@@ -1,3 +1,6 @@
+#ifndef CPU_H
+#define CPU_H
+
 #define DEFAULT_QUANTA 2
 
 struct CPU {
@@ -8,3 +11,5 @@ struct CPU {
 } CPU;
 
 int run(int);
+
+#endif
