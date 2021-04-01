@@ -1,3 +1,5 @@
+#ifndef KERNEL_H
+#define KERNEL_H
 
 /*
 Returns the size of the queue
@@ -14,8 +16,7 @@ struct PCB* pop();
 /*
 Adds a pcb to the tail of the linked list
 */
-void addToReady(struct PCB *pcb);
-
+void addToReady(struct PCB* pcb);
 
 int scheduler();
 
@@ -29,3 +30,5 @@ Given a frameNumber, it returns the PCB that was allocated
 this frame.
 */
 struct PCB* getFrameOwner(int frameNumber);
+
+#endif

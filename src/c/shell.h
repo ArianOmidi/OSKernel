@@ -1,5 +1,8 @@
+#ifndef SHELL_H
+#define SHELL_H
+
 /*
-This functions passes an int errorCode and command string and display the 
+This functions passes an int errorCode and command string and display the
 appropriate error message for that errorCode
 ERRORCODE -1 : RAN OUT OF SHELL MEMORY
 ERRORCODE -2 : INCORRECT NUMBER OF ARGUMENTS
@@ -8,9 +11,10 @@ ERRORCODE -4 : UNKNOWN COMMAND.
 ERRORCODE -5 : NOT ENOUGH RAM (EXEC)
 ERRORCODE -6 : LAUNCHING ERROR (EXEC)
 */
-void displayCode(int errorCode,char* command);
+void displayCode(int errorCode, char* command);
 
 int parse(char ui[]);
 
 int shellUI();
 
+#endif

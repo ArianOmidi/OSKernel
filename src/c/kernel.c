@@ -32,7 +32,7 @@ This function will perform the OS boot sequence.
 It will clear the RAM, i.e set every cell to NULL
 It will delete the content of the backing store directory named "BackingStore"
 */
-int boot() {
+void boot() {
   // Clears the RAM
   clearRAM();
   // Get a directory pointer
@@ -254,4 +254,5 @@ PCB* getFrameOwner(int frameNumber) {
     if (isAFrameOf(temp->PCB, frameNumber)) return temp->PCB;
     temp = temp->next;
   }
+  return NULL;
 }
