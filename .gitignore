@@ -1,0 +1,6 @@
+submission/
+
+.vscode/
+.DS_Store/
+
+*.o
