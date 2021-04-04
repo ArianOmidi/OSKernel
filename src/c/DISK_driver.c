@@ -17,22 +17,20 @@ struct FAT {
                          // number)
 } fat[20];
 
-struct MAP {
-  int active_file_index;
-  int fat_index;
-} map[5];  // TODO: reformat?
+int next_free_fat_cell;
 
 char *block_buffer;
 
 FILE *active_file_table[5];
 
-int next_free_fat_cell;
+int map[5];
 
 // Helper method headers
 int findFreeCell();
 int findFATMapping(int fat_index);
 void setFileToBlock(FILE *f, int blockIndex);
 int getFreeBlock();
+int saveFS();
 
 // initialize all global data structure and variables to zero or null. Called
 // from your boot() function.
@@ -49,8 +47,9 @@ void initIO() {
       fat[i].blockPtrs[j] = -1;
     }
   }
-
   next_free_fat_cell = 0;
+
+  for (int i = 0; i < 5; i++) map[i] = -1;
 }
 
 // create & format partition. Called from your mount() function that lives in
@@ -85,6 +84,10 @@ int partition(char *name, int blocksize, int totalblocks) {
 // load FAT & create buffer_block. Called from your mount() function that lives
 // in the interpreter, associated to your scripting mount command.
 int mountFS(char *name) {
+  int errorCode = saveFS();
+  if (errorCode < 0) return 0;
+  initIO();
+
   // create a file for the partition
   char partitionPath[100];
   sprintf(partitionPath, "PARTITION/%s.txt", name);
@@ -94,8 +97,7 @@ int mountFS(char *name) {
   if (f == NULL) return 0;
 
   // load partition info to aPartition
-  fscanf(f, "%d,", &aPartition.total_blocks);
-  fscanf(f, "%d:", &aPartition.block_size);
+  fscanf(f, "%d,%d:", &aPartition.total_blocks, &aPartition.block_size);
 
   // load partition FAT table
   int i = 0;
@@ -106,28 +108,23 @@ int mountFS(char *name) {
       continue;
     }
 
-    // get filename
-    int length = 0;
+    // get filename and file length
     char filename[100];
-    while (c != ',') {
-      filename[length] = c;
-      length++;
-      c = fgetc(f);
+    fscanf(f, "%s,%d", filename, &fat[i].file_length);
+    if (strcmp(filename, "NULL")) {
+      fat[i].filename = NULL;
+      fat[i].current_location = 0;
+      if (next_free_fat_cell == 0) next_free_fat_cell = i;
+    } else {
+      fat[i].filename = strdup(filename);
     }
-    fat[i].filename = strdup(filename);
-
-    // get file length
-    fscanf(f, "%d,", &fat[i].file_length);
 
     // get file block pointers
-    for (int j = 0; j < fat[i].file_length; j++) {
-      fscanf(f, "%d,", &fat[i].blockPtrs[j]);
+    for (int j = 0; j < 10; j++) {
+      fscanf(f, ",%d", &fat[i].blockPtrs[j]);
     }
 
-    // get cur block pointer
-    fscanf(f, "%d", &fat[i].current_location);
     c = fgetc(f);
-
     i++;
   }
 
@@ -170,7 +167,7 @@ int openfile(char *name) {
     if (f == NULL) return -1;
 
     active_file_table[aft_index] = f;
-    map[aft_index].fat_index = fatIndex;
+    map[aft_index] = fatIndex;
     // ------------------------------------------------- //
 
     next_free_fat_cell++;
@@ -191,7 +188,7 @@ int openfile(char *name) {
 
     // add file pointer to active_file_table and update map
     active_file_table[aft_index] = f;
-    map[aft_index].fat_index = fatIndex;
+    map[aft_index] = fatIndex;
 
     // set fat file cur location to 0
     fat[fatIndex].current_location = 0;
@@ -270,7 +267,7 @@ int findFreeCell() {
 
 int findFATMapping(int fat_index) {
   for (int i = 0; i < 5; i++) {
-    if (map[i].fat_index == fat_index) return i;
+    if (map[i] == fat_index) return i;
   }
   return -1;
 }
@@ -304,4 +301,55 @@ int getFreeBlock() {
 
   fclose(f);
   return -1;
+}
+
+int saveFS() {
+  // Close all files
+  for (int i = 0; i < 5; i++) {
+    if (active_file_table[i] != NULL) fclose(active_file_table[i]);
+  }
+
+  // Get data
+  FILE *f = fopen(aPartition.path, "r");
+  if (f == NULL) return -1;
+
+  char data[aPartition.total_blocks * aPartition.block_size];
+  fseek(f, -aPartition.total_blocks * aPartition.block_size, SEEK_END);
+  for (int i = 0; i < aPartition.total_blocks * aPartition.block_size; i++) {
+    data[i] = fgetc(f);
+  }
+  fclose(f);
+
+  // Write to file
+  FILE *f = fopen(aPartition.path, "w+");
+  if (f == NULL) return -1;
+
+  // write partition info
+  fprintf(f, "%d,", aPartition.total_blocks);
+  fprintf(f, "%d:", aPartition.block_size);
+
+  // write info of FAT
+  for (int i = 0; i < 20; i++) {
+    if (i > 0) fputc(';', f);
+
+    // filename
+    if (fat[i].filename == NULL)
+      fprintf(f, "NULL");
+    else
+      fprintf(f, "%s", fat[i].filename);
+
+    // file length
+    fprintf(f, ",%d", fat[i].file_length);
+
+    // data pointers
+    for (int j = 0; j < fat[i].file_length; j++) {
+      fprintf(f, ",%d", fat[i].blockPtrs[j]);
+    }
+  }
+
+  // write data
+  fprintf(f, ":%s", data);
+
+  fclose(f);
+  return 0;
 }
