@@ -155,11 +155,29 @@ int openfile(char *name) {
   }
 
   if (fatIndex == -1) {
-    if (next_free_fat_cell >= 20) return -1;
+    if (next_free_fat_cell == 20) return -1;
+    if (getFreeBlock() == -1) return -1;
     // TODO: check if there is avaliable space on partition?
 
     // create a new entry in FAT
     fat[next_free_fat_cell].filename = strdup(name);
+    fat[next_free_fat_cell].current_location = 0;
+
+    // TODO: remove or redo as in assignment description
+    // ------------------------------------------------- //
+    // find available cell in active file table
+    int aft_index = findFreeCell();
+    if (aft_index == -1) return -1;  // ERROR if active file table is full
+
+    // open the partition and seek to the first block.
+    FILE *f = fopen(aPartition.path, "r+");
+    if (f == NULL) return -1;
+
+    active_file_table[aft_index] = f;
+    map[aft_index].fat_index = fatIndex;
+    // ------------------------------------------------- //
+
+    next_free_fat_cell++;
   } else {
     // If fat is loaded in act return
     int fatMapping = findFATMapping(fatIndex);
@@ -173,8 +191,7 @@ int openfile(char *name) {
     FILE *f = fopen(aPartition.path, "r+");
     if (f == NULL) return -1;
 
-    // TODO: this is wrong
-    fseek(f, -aPartition.total_blocks * aPartition.block_size, SEEK_END);
+    setFileToBlock(f, fat[fatIndex].blockPtrs[0]);
 
     // add file pointer to active_file_table and update map
     active_file_table[aft_index] = f;
