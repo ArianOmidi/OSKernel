@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "DISK_driver.h"
 #include "kernel.h"
 #include "memorymanager.h"
 #include "ram.h"
@@ -133,7 +134,31 @@ int exec(char* words[]) {
 }
 
 int mount(char* words[]) {
-  // TODO:
+  int errorCode;
+  char partitionPath[100];
+  sprintf(partitionPath, "PARTITION/%s.txt", words[1]);
+  FILE* f = fopen(partitionPath, "r");
+
+  // create a partition if it doesnt exist
+  if (f == NULL) {
+    int numOfBlocks = atoi(words[2]);
+    int blockSize = atoi(words[3]);
+
+    if (numOfBlocks == 0 || blockSize == 0) return -2;
+
+    errorCode = partition(words[1], blockSize, numOfBlocks);
+
+    if (errorCode == 0) {
+      displayCode(-2, "PARTITION");
+      return 0;
+    }
+  } else {
+    fclose(f);
+  }
+
+  errorCode = mountFS(words[1]);
+  if (errorCode == 0) displayCode(-2, "MOUNT");
+
   return 0;
 }
 

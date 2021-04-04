@@ -62,17 +62,28 @@ int partition(char *name, int blocksize, int totalblocks) {
   char partitionPath[100];
   sprintf(partitionPath, "PARTITION/%s.txt", name);
 
-  FILE *f = fopen(partitionPath, "r+");
+  FILE *f = fopen(partitionPath, "w+");
   if (f == NULL) return 0;
 
   // TODO: write partition info
   fprintf(f, "%d,", totalblocks);
   fprintf(f, "%d:", blocksize);
 
-  // TODO: write info of FAT
+  // write info of FAT
+  for (int i = 0; i < 20; i++) {
+    if (i > 0) fputc(';', f);
+
+    // filename and file length
+    fprintf(f, "NULL,0");
+
+    // data pointers
+    for (int j = 0; j < 10; j++) {
+      fprintf(f, ",%d", -1);
+    }
+  }
   fputc(':', f);
 
-  // TODO: write totalblocks * blocksize '0's to file
+  // write totalblocks * blocksize '0's to file
   for (int i = 0; i < totalblocks * blocksize; i++) {
     fputc('0', f);
   }
@@ -108,16 +119,28 @@ int mountFS(char *name) {
       continue;
     }
 
-    // get filename and file length
+    // get filename
     char filename[100];
-    fscanf(f, "%s,%d", filename, &fat[i].file_length);
-    if (strcmp(filename, "NULL")) {
+    for (int j = 0; j < 100; j++) {
+      if (c == ',') {
+        filename[j] = '\0';
+        break;
+      }
+      filename[j] = c;
+      c = fgetc(f);
+    }
+
+    if (strcmp(filename, "NULL") == 0) {
       fat[i].filename = NULL;
       fat[i].current_location = 0;
       if (next_free_fat_cell == 0) next_free_fat_cell = i;
     } else {
       fat[i].filename = strdup(filename);
+      fat[i].current_location = 0;
     }
+
+    // get file length
+    fscanf(f, "%d", &fat[i].file_length);
 
     // get file block pointers
     for (int j = 0; j < 10; j++) {
@@ -321,7 +344,7 @@ int saveFS() {
   fclose(f);
 
   // Write to file
-  FILE *f = fopen(aPartition.path, "w+");
+  f = fopen(aPartition.path, "w+");
   if (f == NULL) return -1;
 
   // write partition info
@@ -342,7 +365,7 @@ int saveFS() {
     fprintf(f, ",%d", fat[i].file_length);
 
     // data pointers
-    for (int j = 0; j < fat[i].file_length; j++) {
+    for (int j = 0; j < 10; j++) {
       fprintf(f, ",%d", fat[i].blockPtrs[j]);
     }
   }

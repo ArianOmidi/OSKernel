@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "DISK_driver.h"
 #include "cpu.h"
 #include "interpreter.h"
 #include "memorymanager.h"
@@ -40,11 +41,12 @@ void boot() {
   // if directory exists, close it and remove its content
   if (dir) {
     closedir(dir);
-    system("rm -r BackingStore/*");
+    system("rm -rf BackingStore/*");
     // if directory does not exist, create it
   } else if (ENOENT == errno) {
     system("mkdir BackingStore");
   }
+  initIO();
 }
 
 /*
