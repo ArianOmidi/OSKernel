@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g
 
-mykernel : cpu.o interpreter.o kernel.o pcb.o ram.o shell.o shellmemory.o memorymanager.o
+mykernel : cpu.o interpreter.o kernel.o pcb.o ram.o shell.o shellmemory.o memorymanager.o DISK_driver.o
 	$(CC) $(CFLAGS) -o mykernel *.o
 
 cpu.o : cpu.c 
@@ -27,6 +27,9 @@ shellmemory.o : shellmemory.c
 
 memorymanager.o : memorymanager.c
 	$(CC) -c $(CFLAGS) memorymanager.c 
+
+DISK_driver.o : DISK_driver.c
+	$(CC) -c $(CFLAGS) DISK_driver.c 
 
 .PHONY:
 clean:

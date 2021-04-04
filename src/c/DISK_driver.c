@@ -13,9 +13,8 @@ struct FAT {
   int file_length;    // length of file in number of blocks
   int blockPtrs[10];  // pointers to the blocks in the partition with data from
                       // the file(block numbers)
-  int current_location;   // current location of the file pointer (local block//
-                          // number)
-  int active_file_index;  // TODO: remove?
+  int current_location;  // current location of the file pointer (local block//
+                         // number)
 } fat[20];
 
 struct MAP {
@@ -38,6 +37,7 @@ int getFreeBlock();
 // initialize all global data structure and variables to zero or null. Called
 // from your boot() function.
 void initIO() {
+  aPartition.path = NULL;
   aPartition.total_blocks = 0;
   aPartition.block_size = 0;
 
@@ -45,7 +45,9 @@ void initIO() {
     fat[i].filename = NULL;
     fat[i].file_length = 0;
     fat[i].current_location = -1;
-    fat[i].active_file_index = -1;
+    for (int j = 0; j < 10; j++) {
+      fat[i].blockPtrs[j] = -1;
+    }
   }
 
   next_free_fat_cell = 0;
@@ -55,21 +57,18 @@ void initIO() {
 // the interpreter, associated to your scripting mount command.
 int partition(char *name, int blocksize, int totalblocks) {
   // create PARTITION directory
-  system("mkdir PARTITION");
+  system("mkdir -p PARTITION");
 
   // create a file for the partition
   char partitionPath[100];
   sprintf(partitionPath, "PARTITION/%s.txt", name);
-  aPartition.path = strdup(partitionPath);
-  FILE *f = fopen(partitionPath, "w+");
 
+  FILE *f = fopen(partitionPath, "r+");
   if (f == NULL) return 0;
 
   // TODO: write partition info
-  fputw(totalblocks, f);
-  fputc(',', f);
-  fputw(totalblocks, f);
-  fputc(':', f);
+  fprintf(f, "%d,", totalblocks);
+  fprintf(f, "%d:", blocksize);
 
   // TODO: write info of FAT
   fputc(':', f);
@@ -89,15 +88,14 @@ int mountFS(char *name) {
   // create a file for the partition
   char partitionPath[100];
   sprintf(partitionPath, "PARTITION/%s.txt", name);
-  FILE *f = fopen(partitionPath, "r");
+  aPartition.path = strdup(partitionPath);
 
+  FILE *f = fopen(partitionPath, "r");
   if (f == NULL) return 0;
 
-  // load partition info to aPartition and fat[]
-  aPartition.total_blocks = fgetw(f);
-  fgetc(f);
-  aPartition.block_size = fgetw(f);
-  fgetc(f);
+  // load partition info to aPartition
+  fscanf(f, "%d,", &aPartition.total_blocks);
+  fscanf(f, "%d:", &aPartition.block_size);
 
   // load partition FAT table
   int i = 0;
@@ -119,17 +117,15 @@ int mountFS(char *name) {
     fat[i].filename = strdup(filename);
 
     // get file length
-    fat[i].file_length = fgetw(f);
-    c = fgetc(f);
+    fscanf(f, "%d,", &fat[i].file_length);
 
     // get file block pointers
     for (int j = 0; j < fat[i].file_length; j++) {
-      fat[i].blockPtrs[j] = fgetw(f);
-      c = fgetc(f);
+      fscanf(f, "%d,", &fat[i].blockPtrs[j]);
     }
 
     // get cur block pointer
-    fat[i].current_location = fgetw(f);
+    fscanf(f, "%d", &fat[i].current_location);
     c = fgetc(f);
 
     i++;
