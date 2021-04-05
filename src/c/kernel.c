@@ -57,8 +57,6 @@ At the end, it also deletes the files in the BackingStore
 int kernel() {
   // runs the shell
   int errorCode = shellUI();
-  // save mounted File System
-  saveFS();
 
   return errorCode;
 }

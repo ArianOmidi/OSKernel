@@ -89,6 +89,7 @@ int partition(char *name, int blocksize, int totalblocks) {
     fputc('0', f);
   }
 
+  fflush(f);
   fclose(f);
   return 1;
 }
@@ -134,10 +135,10 @@ int mountFS(char *name) {
     if (strcmp(filename, "NULL") == 0) {
       fat[i].filename = NULL;
       fat[i].current_location = 0;
-      if (next_free_fat_cell == 0) next_free_fat_cell = i;
     } else {
       fat[i].filename = strdup(filename);
       fat[i].current_location = 0;
+      next_free_fat_cell = i + 1;
     }
 
     // get file length
@@ -151,6 +152,7 @@ int mountFS(char *name) {
     c = fgetc(f);
     i++;
   }
+  fflush(f);
 
   // reset block_buffer size
   free(block_buffer);
@@ -179,9 +181,10 @@ int openfile(char *name) {
     if (getFreeBlock() == -1) return -1;
     // TODO: check if there is avaliable space on partition?
 
+    fatIndex = next_free_fat_cell;
     // create a new entry in FAT
-    fat[next_free_fat_cell].filename = strdup(name);
-    fat[next_free_fat_cell].current_location = 0;
+    fat[fatIndex].filename = strdup(name);
+    fat[fatIndex].current_location = 0;
 
     // TODO: remove or redo as in assignment description
     // ------------------------------------------------- //
@@ -191,7 +194,7 @@ int openfile(char *name) {
 
     // open the partition and seek to the first block.
     FILE *f = fopen(aPartition.path, "r+");
-    if (f == NULL) return -1;
+    if (f == NULL) return -3;
 
     active_file_table[aft_index] = f;
     map[aft_index] = fatIndex;
@@ -280,6 +283,7 @@ int writeBlock(int file, char *data) {
 
   fat[file].blockPtrs[fat[file].current_location] = nextBlock;
   fat[file].current_location++;
+
   return 0;
 }
 
@@ -384,6 +388,7 @@ int saveFS() {
   // write data
   fprintf(f, ":%s", data);
 
+  fflush(f);
   fclose(f);
   return 0;
 }

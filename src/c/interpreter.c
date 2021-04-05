@@ -196,11 +196,11 @@ int write(char* words[]) {
 
   int blockSize = getBlockSize();
   char writeBuffer[blockSize];
-  for (int j = 0; j < strlen(value); j += blockSize) {
+  for (int j = 0; j < strlen(value) - 1; j += blockSize) {
     strncpy(writeBuffer, &value[j], blockSize);
     // write block to file
     int errorCode = writeBlock(file, writeBuffer);
-    if (errorCode < 0) return -3;
+    if (errorCode < 0) return errorCode;
   }
 
   printf("WROTE DATA\n");
