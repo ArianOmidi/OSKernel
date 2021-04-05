@@ -327,6 +327,8 @@ int getFreeBlock() {
 }
 
 int saveFS() {
+  if (aPartition.path == NULL) return 0;
+
   // Close all files
   for (int i = 0; i < 5; i++) {
     if (active_file_table[i] != NULL) fclose(active_file_table[i]);
