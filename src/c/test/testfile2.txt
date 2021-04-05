@@ -1,4 +1,4 @@
-run tests/utils.txt
+run test/utils.txt
 
 # open and read partition 1
 mount partition1 10 5

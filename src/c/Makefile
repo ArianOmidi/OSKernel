@@ -45,6 +45,6 @@ reset:
 
 .PHONY:
 test: mykernel
-	./mykernel < tests/testfile1.txt
-	./mykernel < tests/testfile2.txt
-	./mykernel < tests/testfile3.txt
+	./mykernel < test/testfile1.txt
+	./mykernel < test/testfile2.txt
+	./mykernel < test/testfile3.txt

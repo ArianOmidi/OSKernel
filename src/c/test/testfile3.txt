@@ -1,4 +1,4 @@
-run tests/utils.txt
+run test/utils.txt
 
 # overwrite to partition 3
 mount partition3 6 10
