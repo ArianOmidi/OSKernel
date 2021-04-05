@@ -163,9 +163,6 @@ int mount(char* words[]) {
 }
 
 int write(char* words[]) {
-  char* filename = words[1];
-
-  words[2]++;
   // Get value passed
   char value[1024] = "";
   char buffer[100];
@@ -177,30 +174,27 @@ int write(char* words[]) {
   }
 
   // Check data is wrapped in square brackets
-  if (words[2][0] != '[' || value[strlen(value) - 1] != ']') {
+  if (value[0] != '[' || value[strlen(value) - 2] != ']') {
     displayCode(-7, "WRAP DATA WITH []");
   }
-  // Remove '[' and ']'
-  value[strlen(value) - 2] = '\0';
 
-  // call write driver
-  printf("opening file... ");
+  // Remove '[' and ']'
+  memmove(value, value + 1, strlen(value));
+  value[strlen(value) - 2] = '\0';
+  printf("\t- DATA: '%s' -\t", value);
 
   // open file (only opens if file does not exist)
   int file = openfile(words[1]);
   if (file < 0) return file;
 
-  printf("FILE OPENED\n");
-
-  printf("writing data... ");
-
+  // call write driver
   int blockSize = getBlockSize();
   char writeBuffer[blockSize];
-  for (int j = 0; j < strlen(value) - 1; j += blockSize) {
+  for (int j = 0; j < strlen(value); j += blockSize) {
     strncpy(writeBuffer, &value[j], blockSize);
+
     // write block to file
     int errorCode = writeBlock(file, writeBuffer);
-
     if (errorCode == -11)
       printf(
           "WARNING : Partition data is full, only the first %d bytes were "
@@ -210,27 +204,20 @@ int write(char* words[]) {
       return errorCode;
   }
 
-  printf("WROTE DATA\n");
-
   return 0;
 }
 
 int read(char* words[]) {
-  printf("opening file... ");
-
   // open file (only opens if file does not exist)
   int file = openfile(words[1]);
   if (file < 0) return file;
 
-  printf("FILE OPENED\n");
-
-  printf("reading block... ");
-
   // read block from file
   char* data = readBlock(file);
-  if (data == NULL) printf("ERROR : Reading past EOF");
-
-  printf("READ DATA\n");
+  if (data == NULL) {
+    displayCode(-16, "");
+    return 0;
+  }
 
   // set variable to data read from file
   int errorCode = setVariable(words[2], data);
@@ -252,7 +239,7 @@ int interpreter(char* words[]) {
   // command
   int errorCode = 0;
   // At this point, we are checking for each possible commands entered
-  if (strcmp(words[0], "_NONE_") == 0) {
+  if (strcmp(words[0], "_NONE_") == 0 || words[0][0] == '#') {
     // if it's an empty line, return
     return 0;
   } else if (strcmp(words[0], "help") == 0) {

@@ -267,7 +267,6 @@ int writeBlock(int file, char *data) {
   int nextBlock;
   if (fat[file].current_location == fat[file].file_length) {
     nextBlock = getFreeBlock();
-    printf(" -> FREE BLOCK: %d ", nextBlock);
     if (nextBlock == -1) return -11;
   } else {
     nextBlock = fat[file].blockPtrs[fat[file].current_location];
@@ -321,14 +320,11 @@ int getFreeBlock() {
   // Set to start of data section and see
   fseek(f, -aPartition.total_blocks * aPartition.block_size, SEEK_END);
 
-  printf("DATA:");
   for (int i = 0; i < aPartition.total_blocks; i++) {
-    printf(" ");
     numOfZeros = 0;
     for (int j = 0; j < aPartition.block_size; j++) {
       c = fgetc(f);
       if (c == '0') numOfZeros++;
-      printf("%c", c);
     }
 
     if (numOfZeros == aPartition.block_size) {
@@ -388,13 +384,13 @@ int saveFS() {
 
   // write data
   fprintf(f, ":%s", data);
-  printf("\n\t%s -> DATA: \"%s\"\n", aPartition.path, data);
 
   fflush(f);
   fclose(f);
   return 0;
 }
 
+// for debugging
 void printFAT() {
   printf(
       "\n\t------------------------------ FAT "

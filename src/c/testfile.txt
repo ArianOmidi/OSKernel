@@ -1,33 +1,61 @@
+set pbr ====================
+set fbr ---------------
+set p1 =====PARTITION1=====
+set p2 =====PARTITION2=====
+set f1 -----FILE1-----
+set f2 -----FILE2-----
+
 mount partition1 10 5
+print p1
 write file1 [hello world test]
+print pbr
 
 mount partition2 20 6
-write file1 [this is a test]
-write file2 [FILE2-DATA]
+print p2
+write file1 [this is a test,]
+write file2 [ABCDEFGHIJK]
+write file1 [i hope i pass]
+write file2 [LMNOPQRSTUV]
+print pbr
 
 mount partition1 10 5
+print p1
+set f1 -----FILE1-----
+print f1
 read file1 var
 print var
+print fbr
+print pbr
 
 mount partition2 20 6
-read file1 var1
-read file2 var5
-read file1 var2
-read file2 var6
-read file1 var3
-#read file1 var4
-#read file2 var7
-set f1 file1
-set f2 file2
-print f1 
-print var1
-print var2 
-print var3
-print var4
+print p2
+read file1 var11
+read file2 var21
+read file1 var12
+read file2 var22
+read file1 var13
+read file1 var14
+read file2 var23
+read file2 var24
+read file1 var15
+read file1 var16
+read file2 var25
+print f1
+print var11
+print var12 
+print var13
+print var14
+print var15
+print var16
+print fbr
 print f2 
-print var5
-print var6
-print var7
+print var21
+print var22
+print var23
+print var24
+print var25
+print fbr
+print pbr
 
 mount partition3 20 6
 

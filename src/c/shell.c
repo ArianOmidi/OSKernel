@@ -59,6 +59,9 @@ void displayCode(int errorCode, char *command) {
     case -15:
       printf("ERRORCODE -15 : FAILED TO CREATE PARTITION '%s'\n", command);
       break;
+    case -16:
+      printf("ERRORCODE -16 : REQUESTED TO READ PAST EOF\n");
+      break;
   }
 
   return;
