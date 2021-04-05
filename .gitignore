@@ -4,3 +4,5 @@ submission/
 .DS_Store/
 
 *.o
+BackingStore/
+PARTITION/
