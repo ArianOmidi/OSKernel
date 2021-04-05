@@ -31,6 +31,7 @@ int findFATMapping(int fat_index);
 void setFileToBlock(FILE *f, int blockIndex);
 int getFreeBlock();
 int saveFS();
+void printFAT();
 
 // initialize all global data structure and variables to zero or null. Called
 // from your boot() function.
@@ -155,6 +156,9 @@ int mountFS(char *name) {
   free(block_buffer);
   block_buffer = (char *)malloc(aPartition.block_size);
 
+  // TODO: remove
+  printFAT();
+
   fclose(f);
   return 1;
 }
@@ -164,7 +168,7 @@ int mountFS(char *name) {
 int openfile(char *name) {
   int fatIndex = -1;
   for (int i = 0; i < 20; i++) {
-    if (strcmp(name, fat[i].filename) == 0) {
+    if (fat[i].filename != NULL && strcmp(name, fat[i].filename) == 0) {
       fatIndex = i;
       break;
     }
@@ -377,4 +381,20 @@ int saveFS() {
 
   fclose(f);
   return 0;
+}
+
+void printFAT() {
+  printf(
+      "\n\t------------------------------ FAT "
+      "----------------------------\n");
+
+  for (int i = 0; i < 20; i++) {
+    printf("\t%d ->\t\"%s\" - %d / %d\n", i, fat[i].filename,
+           fat[i].current_location, fat[i].file_length);
+    printf("\t|");
+    for (int j = 0; j < 10; j++) printf("%d|", fat[i].blockPtrs[j]);
+    printf("\n");
+  }
+  printf(
+      "\t--------------------------------------------------------------\n\n");
 }

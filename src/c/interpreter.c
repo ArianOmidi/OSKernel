@@ -186,8 +186,25 @@ int write(char* words[]) {
 }
 
 int read(char* words[]) {
-  // TODO:
-  return 0;
+  printf("opening file... ");
+
+  // open file (only opens if file does not exist)
+  int file = openfile(words[1]);
+  if (file < 0) return file;
+
+  printf("FILE OPENED\n");
+
+  printf("reading block... ");
+
+  // read block from file
+  char* data = readBlock(file);
+  if (data == NULL) return -7;
+
+  printf("READ DATA\n");
+
+  // set variable to data read from file
+  int errorCode = setVariable(words[2], data);
+  return errorCode;
 }
 
 /*
@@ -232,7 +249,6 @@ int interpreter(char* words[]) {
     // if it's the "quit" command
     // errorCode is 1 when user voluntarily wants to quit the program.
     errorCode = 1;
-
   } else if (strcmp(words[0], "set") == 0) {
     // if it's the "set VAR STRING" command
     // check for the presence or 2 more arguments

@@ -35,6 +35,8 @@ DISK_driver.o : DISK_driver.c
 clean:
 	rm -f *.o
 	rm -f mykernel
+	rm -fr BackingStore
+	rm -fr PARTITION
 
 .PHONY:
 test: mykernel
