@@ -181,7 +181,6 @@ int write(char* words[]) {
   // Remove '[' and ']'
   memmove(value, value + 1, strlen(value));
   value[strlen(value) - 2] = '\0';
-  printf("\t- DATA: '%s' -\t", value);
 
   // open file (only opens if file does not exist)
   int file = openfile(words[1]);

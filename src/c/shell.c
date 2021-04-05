@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "interpreter.h"
 
@@ -60,7 +61,7 @@ void displayCode(int errorCode, char *command) {
       printf("ERRORCODE -15 : FAILED TO CREATE PARTITION '%s'\n", command);
       break;
     case -16:
-      printf("ERRORCODE -16 : REQUESTED TO READ PAST EOF\n");
+      printf("WARNING : Requested to read past EOF\n");
       break;
   }
 
@@ -111,19 +112,27 @@ int shellUI() {
   int errorCode;
 
   while (1) {
-    // prints prompt
-    printf("%s", prompt);
-    // gets user input
-    fgets(userinput, 999, stdin);
-    // parses and interprets the command
-    errorCode = parse(userinput);
-    // If the user entered the "quit" command
-    if (errorCode == 1) {
-      printf(
-          "----------------------------------\nExiting, "
-          "Farewell...\n----------------------------------\n");
-      break;
-      // else if an error occurred, display what that error is
+    while (!feof(stdin)) {
+      // prints prompt if input is from the terminal
+      if (isatty(STDIN_FILENO)) printf("%s", prompt);
+      // gets user input
+      fgets(userinput, 999, stdin);
+      // parses and interprets the command
+      errorCode = parse(userinput);
+      // If the user entered the "quit" command
+      if (errorCode == 1) {
+        printf(
+            "----------------------------------\nExiting, "
+            "Farewell...\n----------------------------------\n");
+        return 0;
+      }
+    }
+    // Redirect input to terminal if file is done
+    if (!isatty(STDIN_FILENO)) {
+      if (!freopen("/dev/tty", "r", stdin)) {
+        perror("/dev/tty");
+        exit(1);
+      }
     }
   }
   return 0;
