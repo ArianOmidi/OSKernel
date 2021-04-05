@@ -15,4 +15,6 @@ int writeBlock(int file, char *data);
 
 int saveFS();
 
+int getBlockSize();
+
 #endif

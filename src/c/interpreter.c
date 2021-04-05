@@ -163,24 +163,47 @@ int mount(char* words[]) {
 }
 
 int write(char* words[]) {
-  // TODO:
   char* filename = words[1];
 
   // Check data is wrapped in square brackets
   if (words[2][0] != '[') {
     // TODO: throw error
-  } else {
-    // Update pointer to not include '['
-    words[2]++;
   }
+  // Remove '['
+  words[2]++;
 
-  // Get number of valid words
-  int i = 3;
+  // Get value passed
+  char value[1024] = "";
+  char buffer[100];
+  int i = 2;
   while (strcmp(words[i], "_NONE_") != 0) {
+    sprintf(buffer, "%s ", words[i]);
+    strcat(value, buffer);
     i++;
   }
+  value[strlen(value) - 2] = '\0';
 
-  // TODO: call drivers
+  // call write driver
+  printf("opening file... ");
+
+  // open file (only opens if file does not exist)
+  int file = openfile(words[1]);
+  if (file < 0) return file;
+
+  printf("FILE OPENED\n");
+
+  printf("writing data... ");
+
+  int blockSize = getBlockSize();
+  char writeBuffer[blockSize];
+  for (int j = 0; j < strlen(value); j += blockSize) {
+    strncpy(writeBuffer, &value[j], blockSize);
+    // write block to file
+    int errorCode = writeBlock(file, writeBuffer);
+    if (errorCode < 0) return -3;
+  }
+
+  printf("WROTE DATA\n");
 
   return 0;
 }

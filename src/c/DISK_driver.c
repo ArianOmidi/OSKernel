@@ -252,7 +252,6 @@ char *readBlock(int file) {
 int writeBlock(int file, char *data) {
   // check for invalid FAT index
   if (file < 0 || file >= 20) return -1;
-  // TODO: check if data is valid
 
   // get corresponding file
   FILE *f = active_file_table[findFATMapping(file)];
@@ -262,6 +261,7 @@ int writeBlock(int file, char *data) {
   int nextBlock;
   if (fat[file].current_location == fat[file].file_length) {
     nextBlock = getFreeBlock();
+    printf(" -> FREE BLOCK: %d ", nextBlock);
     if (nextBlock == -1) return -1;
   } else {
     nextBlock = fat[file].blockPtrs[fat[file].current_location];
@@ -272,13 +272,13 @@ int writeBlock(int file, char *data) {
   for (int i = 0; i < aPartition.block_size; i++) {
     fputc(data[i], f);
   }
+  fflush(f);
 
   // update FAT table
   if (fat[file].current_location == fat[file].file_length)
     fat[file].file_length++;
-  else
-    fat[file].blockPtrs[fat[file].current_location] = nextBlock;
 
+  fat[file].blockPtrs[fat[file].current_location] = nextBlock;
   fat[file].current_location++;
   return 0;
 }
@@ -313,11 +313,14 @@ int getFreeBlock() {
   // Set to start of data section and see
   fseek(f, -aPartition.total_blocks * aPartition.block_size, SEEK_END);
 
+  printf("DATA:");
   for (int i = 0; i < aPartition.total_blocks; i++) {
+    printf(" ");
     numOfZeros = 0;
     for (int j = 0; j < aPartition.block_size; j++) {
       c = fgetc(f);
       if (c == '0') numOfZeros++;
+      printf("%c", c);
     }
 
     if (numOfZeros == aPartition.block_size) {
@@ -329,6 +332,8 @@ int getFreeBlock() {
   fclose(f);
   return -1;
 }
+
+int getBlockSize() { return aPartition.block_size; }
 
 int saveFS() {
   if (aPartition.path == NULL) return 0;
