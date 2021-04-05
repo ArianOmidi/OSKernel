@@ -1,0 +1,125 @@
+run tests/utils.txt
+
+# open and read partition 1
+mount partition1 10 5
+print p1
+print f1
+read file1 var11
+read file1 var12
+read file1 var13
+read file1 var14
+print var11
+print var12
+print var13
+print var14
+print fbr
+print pbr
+
+# write to partition 1
+mount partition1 10 5
+write file2 [FILE2]
+write file3 [file3oo-]
+write file2 [OO-]
+
+# open and read partition 2
+mount partition2 20 6
+print p2
+read file1 var11
+read file2 var21
+read file1 var12
+read file2 var22
+read file1 var13
+read file1 var14
+read file2 var23
+read file2 var24
+read file1 var15
+read file1 var16
+print f1
+print var11
+print var12 
+print var13
+print var14
+print var15
+print var16
+print fbr
+print f2 
+print var21
+print var22
+print var23
+print var24
+print fbr
+print pbr
+
+# overwrite partition 2
+mount partition2 20 6 
+write file1 [THIS IS NOT a test]
+write file2 [abcdef-ghijk]
+write file3 [3.3..3...3..3.3]
+
+# open and read partition 1
+mount partition1 10 5
+print p1
+print f1
+read file1 var11
+read file1 var12
+read file1 var13
+read file1 var14
+print var11
+print var12
+print var13
+print var14
+print fbr
+print f2
+read file2 var21
+read file2 var22
+print var21
+print var22
+print fbr
+print f3
+read file3 var31
+read file3 var32
+print var31
+print var32
+print fbr
+print pbr
+
+# open and read partition 2
+mount partition2 20 6
+print p2
+read file1 var11
+read file2 var21
+read file1 var12
+read file2 var22
+read file1 var13
+read file1 var14
+read file2 var23
+read file2 var24
+read file1 var15
+read file1 var16
+read file3 var31
+read file3 var32
+read file3 var33
+read file3 var34
+print f1
+print var11
+print var12 
+print var13
+print var14
+print var15
+print var16
+print fbr
+print f2 
+print var21
+print var22
+print var23
+print var24
+print fbr
+print f3
+print var31
+print var32
+print var33
+print var34
+print fbr
+print pbr
+
+quit

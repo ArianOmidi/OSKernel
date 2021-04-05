@@ -1,33 +1,33 @@
-set pbr ====================
-set fbr ---------------
-set p1 =====PARTITION1=====
-set p2 =====PARTITION2=====
-set f1 -----FILE1-----
-set f2 -----FILE2-----
-set f3 -----FILE3-----
+run tests/utils.txt
 
+# write to partition 1
 mount partition1 10 5
-print p1
 write file1 [hello world test]
-print pbr
 
+# write to partition 2
 mount partition2 20 6
-print p2
 write file1 [this is a test,]
 write file2 [ABCDEFGHIJK]
 write file1 [i hope i pass]
 write file2 [LMNOPQRSTUV]
-print pbr
 
+# read partition 1
 mount partition1 10 5
 print p1
 set f1 -----FILE1-----
 print f1
-read file1 var
-print var
+read file1 var11
+read file1 var12
+read file1 var13
+read file1 var14
+print var11
+print var12
+print var13
+print var14
 print fbr
 print pbr
 
+# read partition 2
 mount partition2 20 6
 print p2
 read file1 var11
@@ -40,7 +40,6 @@ read file2 var23
 read file2 var24
 read file1 var15
 read file1 var16
-read file2 var25
 print f1
 print var11
 print var12 
@@ -54,10 +53,10 @@ print var21
 print var22
 print var23
 print var24
-print var25
 print fbr
 print pbr
 
-mount partition3 20 6
+# create partition 3
+mount partition3 6 10
 
 quit

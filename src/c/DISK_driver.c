@@ -32,6 +32,7 @@ void setFileToBlock(FILE *f, int blockIndex);
 int getFreeBlock();
 int saveFS();
 void printFAT();
+void printAFT();
 
 // initialize all global data structure and variables to zero or null. Called
 // from your boot() function.
@@ -405,4 +406,21 @@ void printFAT() {
   }
   printf(
       "\t--------------------------------------------------------------\n\n");
+}
+
+void printAFT() {
+  char *null = "NULL";
+  char *valid = "VALID";
+  char *tmp;
+
+  printf("\n\t--------------- AFT ---------------\n");
+  for (int i = 0; i < 5; i++) {
+    if (active_file_table[i] == NULL)
+      tmp = null;
+    else
+      tmp = valid;
+
+    printf("\t|\t%d\t|\tMAP:%d\t|\tFILE: %s\t|\n", i, map[i], tmp);
+  }
+  printf("\t-----------------------------------\n\n");
 }

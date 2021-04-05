@@ -39,5 +39,12 @@ clean:
 	rm -fr PARTITION
 
 .PHONY:
+reset:
+	rm -fr BackingStore
+	rm -fr PARTITION
+
+.PHONY:
 test: mykernel
-	./mykernel < TESTFILE.txt
+	./mykernel < tests/testfile1.txt
+	./mykernel < tests/testfile2.txt
+	./mykernel < tests/testfile3.txt

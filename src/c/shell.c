@@ -72,9 +72,9 @@ int parse(char ui[]) {
   // printf("In Parser: '%s'",ui);
   char tmp[200];
   int a, b;
-  char *words[10];
+  char *words[50];
   int w = 0;  // wordsIdx
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 50; i++) {
     words[i] = "_NONE_";
   }
   for (a = 0; ui[a] == ' ' && a < 1000; a++)

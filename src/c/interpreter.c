@@ -164,10 +164,10 @@ int mount(char* words[]) {
 
 int write(char* words[]) {
   // Get value passed
-  char value[1024] = "";
-  char buffer[100];
+  char value[2048] = "";
+  char buffer[512];
   int i = 2;
-  while (strcmp(words[i], "_NONE_") != 0) {
+  while (i != 50 && strcmp(words[i], "_NONE_")) {
     sprintf(buffer, "%s ", words[i]);
     strcat(value, buffer);
     i++;
@@ -194,13 +194,15 @@ int write(char* words[]) {
 
     // write block to file
     int errorCode = writeBlock(file, writeBuffer);
-    if (errorCode == -11)
+    if (errorCode == -11) {
       printf(
-          "WARNING : Partition data is full, only the first %d bytes were "
-          "written\n",
-          j * blockSize);
-    else if (errorCode < 0)
+          "WARNING : Partition data is full, the first %d bytes were "
+          "written to '%s'\n",
+          j, words[1]);
+      break;
+    } else if (errorCode < 0) {
       return errorCode;
+    }
   }
 
   return 0;
