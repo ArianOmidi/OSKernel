@@ -1,7 +1,36 @@
 mount partition1 10 5
 write file1 [hello world test]
+
+mount partition2 20 6
+write file1 [this is a test]
+write file2 [FILE2-DATA]
+
+mount partition1 10 5
 read file1 var
 print var
+
+mount partition2 20 6
+read file1 var1
+read file2 var5
+read file1 var2
+read file2 var6
+read file1 var3
+#read file1 var4
+#read file2 var7
+set f1 file1
+set f2 file2
+print f1 
+print var1
+print var2 
+print var3
+print var4
+print f2 
+print var5
+print var6
+print var7
+
+mount partition3 20 6
+
 quit
 
 

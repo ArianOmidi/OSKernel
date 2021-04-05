@@ -50,7 +50,13 @@ void initIO() {
   }
   next_free_fat_cell = 0;
 
-  for (int i = 0; i < 5; i++) map[i] = -1;
+  for (int i = 0; i < 5; i++) {
+    map[i] = -1;
+    if (active_file_table[i] != NULL) {
+      fclose(active_file_table[i]);
+      active_file_table[i] = NULL;
+    }
+  }
 }
 
 // create & format partition. Called from your mount() function that lives in
@@ -158,9 +164,6 @@ int mountFS(char *name) {
   free(block_buffer);
   block_buffer = (char *)malloc(aPartition.block_size);
 
-  // TODO: remove
-  printFAT();
-
   fclose(f);
   return 1;
 }
@@ -177,8 +180,8 @@ int openfile(char *name) {
   }
 
   if (fatIndex == -1) {
-    if (next_free_fat_cell == 20) return -1;
-    if (getFreeBlock() == -1) return -1;
+    if (next_free_fat_cell == 20) return -12;
+    if (getFreeBlock() == -1) return -11;
     // TODO: check if there is avaliable space on partition?
 
     fatIndex = next_free_fat_cell;
@@ -190,11 +193,11 @@ int openfile(char *name) {
     // ------------------------------------------------- //
     // find available cell in active file table
     int aft_index = findFreeCell();
-    if (aft_index == -1) return -1;  // ERROR if active file table is full
+    if (aft_index == -1) return -13;  // ERROR if active file table is full
 
     // open the partition and seek to the first block.
     FILE *f = fopen(aPartition.path, "r+");
-    if (f == NULL) return -3;
+    if (f == NULL) return -6;
 
     active_file_table[aft_index] = f;
     map[aft_index] = fatIndex;
@@ -208,11 +211,11 @@ int openfile(char *name) {
 
     // find available cell in active file table
     int aft_index = findFreeCell();
-    if (aft_index == -1) return -1;  // ERROR if active file table is full
+    if (aft_index == -1) return -13;  // ERROR if active file table is full
 
     // open the partition and seek to the first block.
     FILE *f = fopen(aPartition.path, "r+");
-    if (f == NULL) return -1;
+    if (f == NULL) return -6;
 
     setFileToBlock(f, fat[fatIndex].blockPtrs[0]);
 
@@ -254,18 +257,18 @@ char *readBlock(int file) {
 // using the file FAT index number, write data to disk at current_location
 int writeBlock(int file, char *data) {
   // check for invalid FAT index
-  if (file < 0 || file >= 20) return -1;
+  if (file < 0 || file >= 20) return -10;
 
   // get corresponding file
   FILE *f = active_file_table[findFATMapping(file)];
-  if (f == NULL) return -1;
+  if (f == NULL) return -6;
 
   // if at EOF, get free block and set the fp to it
   int nextBlock;
   if (fat[file].current_location == fat[file].file_length) {
     nextBlock = getFreeBlock();
     printf(" -> FREE BLOCK: %d ", nextBlock);
-    if (nextBlock == -1) return -1;
+    if (nextBlock == -1) return -11;
   } else {
     nextBlock = fat[file].blockPtrs[fat[file].current_location];
   }
@@ -273,6 +276,7 @@ int writeBlock(int file, char *data) {
 
   // write data
   for (int i = 0; i < aPartition.block_size; i++) {
+    if (data[i] == '\0') break;
     fputc(data[i], f);
   }
   fflush(f);
@@ -342,20 +346,17 @@ int getBlockSize() { return aPartition.block_size; }
 int saveFS() {
   if (aPartition.path == NULL) return 0;
 
-  // Close all files
-  for (int i = 0; i < 5; i++) {
-    if (active_file_table[i] != NULL) fclose(active_file_table[i]);
-  }
-
   // Get data
   FILE *f = fopen(aPartition.path, "r");
   if (f == NULL) return -1;
 
-  char data[aPartition.total_blocks * aPartition.block_size];
-  fseek(f, -aPartition.total_blocks * aPartition.block_size, SEEK_END);
-  for (int i = 0; i < aPartition.total_blocks * aPartition.block_size; i++) {
+  int bytesOfData = aPartition.total_blocks * aPartition.block_size;
+  char data[bytesOfData + 1];
+  fseek(f, -bytesOfData, SEEK_END);
+  for (int i = 0; i < bytesOfData; i++) {
     data[i] = fgetc(f);
   }
+  data[bytesOfData] = '\0';
   fclose(f);
 
   // Write to file
@@ -387,6 +388,7 @@ int saveFS() {
 
   // write data
   fprintf(f, ":%s", data);
+  printf("\n\t%s -> DATA: \"%s\"\n", aPartition.path, data);
 
   fflush(f);
   fclose(f);

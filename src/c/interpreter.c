@@ -149,7 +149,7 @@ int mount(char* words[]) {
     errorCode = partition(words[1], blockSize, numOfBlocks);
 
     if (errorCode == 0) {
-      displayCode(-2, "PARTITION");
+      displayCode(-15, words[1]);
       return 0;
     }
   } else {
@@ -157,7 +157,7 @@ int mount(char* words[]) {
   }
 
   errorCode = mountFS(words[1]);
-  if (errorCode == 0) displayCode(-2, "MOUNT");
+  if (errorCode == 0) displayCode(-14, words[1]);
 
   return 0;
 }
@@ -165,13 +165,7 @@ int mount(char* words[]) {
 int write(char* words[]) {
   char* filename = words[1];
 
-  // Check data is wrapped in square brackets
-  if (words[2][0] != '[') {
-    // TODO: throw error
-  }
-  // Remove '['
   words[2]++;
-
   // Get value passed
   char value[1024] = "";
   char buffer[100];
@@ -181,6 +175,12 @@ int write(char* words[]) {
     strcat(value, buffer);
     i++;
   }
+
+  // Check data is wrapped in square brackets
+  if (words[2][0] != '[' || value[strlen(value) - 1] != ']') {
+    displayCode(-7, "WRAP DATA WITH []");
+  }
+  // Remove '[' and ']'
   value[strlen(value) - 2] = '\0';
 
   // call write driver
@@ -200,7 +200,14 @@ int write(char* words[]) {
     strncpy(writeBuffer, &value[j], blockSize);
     // write block to file
     int errorCode = writeBlock(file, writeBuffer);
-    if (errorCode < 0) return errorCode;
+
+    if (errorCode == -11)
+      printf(
+          "WARNING : Partition data is full, only the first %d bytes were "
+          "written\n",
+          j * blockSize);
+    else if (errorCode < 0)
+      return errorCode;
   }
 
   printf("WROTE DATA\n");
@@ -221,7 +228,7 @@ int read(char* words[]) {
 
   // read block from file
   char* data = readBlock(file);
-  if (data == NULL) return -7;
+  if (data == NULL) printf("ERROR : Reading past EOF");
 
   printf("READ DATA\n");
 
@@ -245,7 +252,10 @@ int interpreter(char* words[]) {
   // command
   int errorCode = 0;
   // At this point, we are checking for each possible commands entered
-  if (strcmp(words[0], "help") == 0) {
+  if (strcmp(words[0], "_NONE_") == 0) {
+    // if it's an empty line, return
+    return 0;
+  } else if (strcmp(words[0], "help") == 0) {
     // if it's the "help" command, we display the description of every commands
     printf(
         "----------------------------------------------------------------------"

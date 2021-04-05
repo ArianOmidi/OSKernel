@@ -34,7 +34,30 @@ void displayCode(int errorCode, char *command) {
       printf("ERRORCODE -5 : NOT ENOUGH RAM TO ADD PROGRAM.'%s'\n", command);
       break;
     case -6:
-      printf("ERRORCODE -6 : LAUNCHING ERROR \n");
+      printf("ERRORCODE -6 : LAUNCHING ERROR\n");
+      break;
+    case -7:
+      printf("ERRORCODE -7 : MALFORMED ARGUMENTS: %s\n", command);
+      break;
+    case -10:
+      printf("ERRORCODE -10 : FID IS INVALID IN CURRENT PARTITION\n");
+      break;
+    case -11:
+      printf("ERRORCODE -11 : CURRENT PARTITION DATA IS FULL\n");
+      break;
+    case -12:
+      printf("ERRORCODE -12 : CURRENT PARTITION FAT IS FULL\n");
+      break;
+    case -13:
+      printf(
+          "ERRORCODE -13 : CURRENT PARTITION ACTIVE FILE TABLE IS FULL - "
+          "REMOUNT PARITION\n");
+      break;
+    case -14:
+      printf("ERRORCODE -14 : FAILED TO MOUNT PARTITION '%s'\n", command);
+      break;
+    case -15:
+      printf("ERRORCODE -15 : FAILED TO CREATE PARTITION '%s'\n", command);
       break;
   }
 
@@ -64,8 +87,11 @@ int parse(char ui[]) {
       ;  // skip white spaces
     w++;
   }
-  return (interpreter(words));
-  // free(words);
+
+  int errorCode = interpreter(words);
+  if (errorCode < 0) displayCode(errorCode, words[0]);
+
+  return errorCode;
 }
 
 /*
@@ -95,10 +121,6 @@ int shellUI() {
           "Farewell...\n----------------------------------\n");
       break;
       // else if an error occurred, display what that error is
-    } else if (errorCode != 0) {
-      // removing the extra carriage return
-      userinput[strlen(userinput) - 1] = '\0';
-      displayCode(errorCode, userinput);
     }
   }
   return 0;

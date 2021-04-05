@@ -1,0 +1,6 @@
+mount partition2 20 6
+write file1 [this is a test]
+write file2 [FILE2 DATA]
+quit
+
+
