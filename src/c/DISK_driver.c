@@ -28,7 +28,7 @@ int map[5];
 // Helper method headers
 int findFreeCell();
 int findFATMapping(int fat_index);
-void setFileToBlock(FILE *f, int blockIndex);
+void seek(FILE *f, int blockIndex);
 int getFreeBlock();
 int saveFS();
 void printFAT();
@@ -163,7 +163,7 @@ int mountFS(char *name) {
 
   // reset block_buffer size
   free(block_buffer);
-  block_buffer = (char *)malloc(aPartition.block_size);
+  block_buffer = (char *)malloc(aPartition.block_size + 1);
 
   fclose(f);
   return 1;
@@ -183,15 +183,12 @@ int openfile(char *name) {
   if (fatIndex == -1) {
     if (next_free_fat_cell == 20) return -12;
     if (getFreeBlock() == -1) return -11;
-    // TODO: check if there is avaliable space on partition?
 
     fatIndex = next_free_fat_cell;
     // create a new entry in FAT
     fat[fatIndex].filename = strdup(name);
     fat[fatIndex].current_location = 0;
 
-    // TODO: remove or redo as in assignment description
-    // ------------------------------------------------- //
     // find available cell in active file table
     int aft_index = findFreeCell();
     if (aft_index == -1) return -13;  // ERROR if active file table is full
@@ -202,7 +199,6 @@ int openfile(char *name) {
 
     active_file_table[aft_index] = f;
     map[aft_index] = fatIndex;
-    // ------------------------------------------------- //
 
     next_free_fat_cell++;
   } else {
@@ -217,8 +213,7 @@ int openfile(char *name) {
     // open the partition and seek to the first block.
     FILE *f = fopen(aPartition.path, "r+");
     if (f == NULL) return -6;
-
-    setFileToBlock(f, fat[fatIndex].blockPtrs[0]);
+    seek(f, fat[fatIndex].blockPtrs[0]);
 
     // add file pointer to active_file_table and update map
     active_file_table[aft_index] = f;
@@ -245,13 +240,14 @@ char *readBlock(int file) {
   if (f == NULL) return NULL;
 
   // set file pointer to start of cur block
-  setFileToBlock(f, fat[file].blockPtrs[fat[file].current_location]);
+  seek(f, fat[file].blockPtrs[fat[file].current_location]);
 
   for (int i = 0; i < aPartition.block_size; i++) {
     block_buffer[i] = fgetc(f);
   }
-  fat[file].current_location++;
+  block_buffer[aPartition.block_size] = '\0';
 
+  fat[file].current_location++;
   return strdup(block_buffer);
 }
 
@@ -272,11 +268,17 @@ int writeBlock(int file, char *data) {
   } else {
     nextBlock = fat[file].blockPtrs[fat[file].current_location];
   }
-  setFileToBlock(f, nextBlock);
+  seek(f, nextBlock);
 
   // write data
   for (int i = 0; i < aPartition.block_size; i++) {
-    if (data[i] == '\0') break;
+    // if at end of data write 0s
+    if (data[i] == '\0') {
+      for (; i < aPartition.block_size; i++) {
+        fputc('0', f);
+      }
+      break;
+    }
     fputc(data[i], f);
   }
   fflush(f);
@@ -307,7 +309,7 @@ int findFATMapping(int fat_index) {
   return -1;
 }
 
-void setFileToBlock(FILE *f, int blockIndex) {
+void seek(FILE *f, int blockIndex) {
   // Set to start of data section and see
   fseek(f, -aPartition.total_blocks * aPartition.block_size, SEEK_END);
   fseek(f, blockIndex * aPartition.block_size, SEEK_CUR);

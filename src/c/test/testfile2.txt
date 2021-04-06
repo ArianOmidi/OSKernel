@@ -60,26 +60,26 @@ write file3 [3.3..3...3..3.3]
 mount partition1 10 5
 print p1
 print f1
-read file1 var11
-read file1 var12
-read file1 var13
-read file1 var14
-print var11
-print var12
-print var13
-print var14
+read file1 var111
+read file1 var112
+read file1 var113
+read file1 var114
+print var111
+print var112
+print var113
+print var114
 print fbr
 print f2
-read file2 var21
-read file2 var22
-print var21
-print var22
+read file2 var121
+read file2 var122
+print var121
+print var122
 print fbr
 print f3
-read file3 var31
-read file3 var32
-print var31
-print var32
+read file3 var131
+read file3 var132
+print var131
+print var132
 print fbr
 print pbr
 

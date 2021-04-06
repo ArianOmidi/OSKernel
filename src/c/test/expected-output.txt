@@ -1,0 +1,133 @@
+----------------------------------
+Kernel 4.0 loaded!
+Welcome to the Arian Omidi Shell!
+Shell Version 3.0 Updated April 2021
+----------------------------------
+/////////////////////////////// STARTING EXECUTION OF test/utils.txt ///////////////////////////////
+/////////////////////////////// Terminating execution of test/utils.txt ///////////////////////////////
+=====PARTITION1=====
+-----FILE1-----
+hello
+ worl
+d tes
+t0000
+---------------
+====================
+=====PARTITION2=====
+-----FILE1-----
+this i
+s a te
+st,000
+i hope
+ i pas
+s00000
+---------------
+-----FILE2-----
+ABCDEF
+GHIJK0
+LMNOPQ
+RSTUV0
+---------------
+====================
+----------------------------------
+Exiting, Farewell...
+----------------------------------
+----------------------------------
+Kernel 4.0 loaded!
+Welcome to the Arian Omidi Shell!
+Shell Version 3.0 Updated April 2021
+----------------------------------
+/////////////////////////////// STARTING EXECUTION OF test/utils.txt ///////////////////////////////
+/////////////////////////////// Terminating execution of test/utils.txt ///////////////////////////////
+=====PARTITION1=====
+-----FILE1-----
+hello
+ worl
+d tes
+t0000
+---------------
+====================
+=====PARTITION2=====
+-----FILE1-----
+this i
+s a te
+st,000
+i hope
+ i pas
+s00000
+---------------
+-----FILE2-----
+ABCDEF
+GHIJK0
+LMNOPQ
+RSTUV0
+---------------
+====================
+=====PARTITION1=====
+-----FILE1-----
+hello
+ worl
+d tes
+t0000
+---------------
+-----FILE2-----
+FILE2
+OO-00
+---------------
+-----FILE3-----
+file3
+oo-00
+---------------
+====================
+=====PARTITION2=====
+WARNING : Requested to read past EOF
+-----FILE1-----
+THIS I
+S NOT 
+a test
+i hope
+ i pas
+s00000
+---------------
+-----FILE2-----
+abcdef
+-ghijk
+LMNOPQ
+RSTUV0
+---------------
+-----FILE3-----
+3.3..3
+...3..
+3.3000
+Variable does not exist
+---------------
+====================
+----------------------------------
+Exiting, Farewell...
+----------------------------------
+----------------------------------
+Kernel 4.0 loaded!
+Welcome to the Arian Omidi Shell!
+Shell Version 3.0 Updated April 2021
+----------------------------------
+/////////////////////////////// STARTING EXECUTION OF test/utils.txt ///////////////////////////////
+/////////////////////////////// Terminating execution of test/utils.txt ///////////////////////////////
+WARNING : Partition data is full, the first 60 bytes were written to 'file1'
+ERRORCODE -11 : CURRENT PARTITION DATA IS FULL
+=====PARTITION3=====
+-----FILE1-----
+THIS FILE 
+IS TOO LON
+G TO FIT I
+N THIS PAR
+TITION. EN
+D HERE -->
+WARNING : Requested to read past EOF
+---------------
+-----FILE2-----
+ERRORCODE -11 : CURRENT PARTITION DATA IS FULL
+---------------
+====================
+----------------------------------
+Exiting, Farewell...
+---------------------------------- error
