@@ -6,3 +6,4 @@ submission/
 *.o
 BackingStore/
 PARTITION/
+output.txt
