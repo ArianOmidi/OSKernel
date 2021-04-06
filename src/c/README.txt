@@ -1,4 +1,5 @@
 *** Implemented an Non-Contiguous File System ***
+*** Partition deleminiators used ',' and ';' ***
 
 Compilation:
 	- Makefile included -> run cmd "make" to compile the code
@@ -11,4 +12,5 @@ Test Scripts:
 Test Suite:
   - Run test suite to run all testfiles, testing partition persistence
     - run w/ "./test.sh" 
+  - Output located in "test/output.txt"
   - Expected output located in "test/expected-output.txt"
