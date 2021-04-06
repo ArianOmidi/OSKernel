@@ -1,3 +1,9 @@
 submission/
-.DS_Store
+
+.vscode/
+.DS_Store/
+
 *.o
+BackingStore/
+PARTITION/
+output.txt

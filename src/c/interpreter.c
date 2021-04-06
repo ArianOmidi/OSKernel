@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "DISK_driver.h"
 #include "kernel.h"
 #include "memorymanager.h"
+#include "ram.h"
 #include "shell.h"
 #include "shellmemory.h"
 
@@ -89,29 +91,28 @@ static int run(char* words[]) {
 }
 
 int exec(char* words[]) {
-  // filter out duplicated text file names
   char* filename[3] = {"_NONE_", "_NONE_", "_NONE_"};
-  int nextFree = 0;
   int errorCode = 0;
-  for (int i = 1; i <= 3; i++) {
-    if (strcmp(words[i], "_NONE_") != 0) {
-      filename[nextFree] = strdup(words[i]);
-      nextFree++;
-
-      FILE* p = fopen(words[i], "r");
-      if (p == NULL) return -3;
-      errorCode = launcher(p);
-
+  for (int i = 0; i < 3; i++) {
+    if (strcmp(words[i + 1], "_NONE_") != 0) {
+      filename[i] = strdup(words[i + 1]);
+      FILE* fp = fopen(filename[i], "r");
+      if (fp == NULL) {
+        errorCode = -3;
+      } else {
+        int err = launcher(fp);
+        // if launcher failed, set errorCode to -6 for LAUNCHING ERROR
+        if (err == 0) {
+          errorCode = -6;
+        }
+      }
       if (errorCode < 0) {
         displayCode(errorCode, words[i]);
         printf("EXEC COMMAND ABORTED...\n");
         emptyReadyQueue();
+        clearRAM();
         return 0;
       }
-    }
-    // We've ran through every filenames, so get out of the for loop
-    else {
-      break;
     }
   }
 
@@ -132,6 +133,98 @@ int exec(char* words[]) {
   return 0;
 }
 
+int mount(char* words[]) {
+  int errorCode;
+  char partitionPath[100];
+  sprintf(partitionPath, "PARTITION/%s.txt", words[1]);
+  FILE* f = fopen(partitionPath, "r");
+
+  // create a partition if it doesnt exist
+  if (f == NULL) {
+    int numOfBlocks = atoi(words[2]);
+    int blockSize = atoi(words[3]);
+
+    if (numOfBlocks == 0 || blockSize == 0) return -2;
+
+    errorCode = partition(words[1], blockSize, numOfBlocks);
+
+    if (errorCode == 0) {
+      displayCode(-15, words[1]);
+      return 0;
+    }
+  } else {
+    fclose(f);
+  }
+
+  errorCode = mountFS(words[1]);
+  if (errorCode == 0) displayCode(-14, words[1]);
+
+  return 0;
+}
+
+int write(char* words[]) {
+  // Get value passed
+  char value[2048] = "";
+  char buffer[512];
+  int i = 2;
+  while (i != 50 && strcmp(words[i], "_NONE_")) {
+    sprintf(buffer, "%s ", words[i]);
+    strcat(value, buffer);
+    i++;
+  }
+
+  // Check data is wrapped in square brackets
+  if (value[0] != '[' || value[strlen(value) - 2] != ']') {
+    displayCode(-7, "WRAP DATA WITH []");
+  }
+
+  // Remove '[' and ']'
+  memmove(value, value + 1, strlen(value));
+  value[strlen(value) - 2] = '\0';
+
+  // open file (only opens if file does not exist)
+  int file = openfile(words[1]);
+  if (file < 0) return file;
+
+  // call write driver
+  int blockSize = getBlockSize();
+  char writeBuffer[blockSize];
+  for (int j = 0; j < strlen(value); j += blockSize) {
+    strncpy(writeBuffer, &value[j], blockSize);
+
+    // write block to file
+    int errorCode = writeBlock(file, writeBuffer);
+    if (errorCode == -11) {
+      printf(
+          "WARNING : Partition data is full, the first %d bytes were "
+          "written to '%s'\n",
+          j, words[1]);
+      break;
+    } else if (errorCode < 0) {
+      return errorCode;
+    }
+  }
+
+  return 0;
+}
+
+int read(char* words[]) {
+  // open file (only opens if file does not exist)
+  int file = openfile(words[1]);
+  if (file < 0) return file;
+
+  // read block from file
+  char* data = readBlock(file);
+  if (data == NULL) {
+    displayCode(-16, "");
+    return 0;
+  }
+
+  // set variable to data read from file
+  int errorCode = setVariable(words[2], data);
+  return errorCode;
+}
+
 /*
 This functions takes a parsed version of the user input.
 It will interpret the valid commands or return a bad error code if the command
@@ -147,7 +240,10 @@ int interpreter(char* words[]) {
   // command
   int errorCode = 0;
   // At this point, we are checking for each possible commands entered
-  if (strcmp(words[0], "help") == 0) {
+  if (strcmp(words[0], "_NONE_") == 0 || words[0][0] == '#') {
+    // if it's an empty line, return
+    return 0;
+  } else if (strcmp(words[0], "help") == 0) {
     // if it's the "help" command, we display the description of every commands
     printf(
         "----------------------------------------------------------------------"
@@ -173,8 +269,7 @@ int interpreter(char* words[]) {
   } else if (strcmp(words[0], "quit") == 0) {
     // if it's the "quit" command
     // errorCode is 1 when user voluntarily wants to quit the program.
-    exit(0);
-
+    errorCode = 1;
   } else if (strcmp(words[0], "set") == 0) {
     // if it's the "set VAR STRING" command
     // check for the presence or 2 more arguments
@@ -212,6 +307,27 @@ int interpreter(char* words[]) {
       return -2;
 
     errorCode = exec(words);
+  } else if (strcmp(words[0], "mount") == 0) {
+    // if it's the "mount" command
+    // check if there's 4 arguments
+    if (strcmp(words[3], "_NONE_") == 0 || strcmp(words[4], "_NONE_") != 0)
+      return -2;
+
+    errorCode = mount(words);
+  } else if (strcmp(words[0], "write") == 0) {
+    // if it's the "write" command
+    // check if there's at least 3 arguments
+    if (strcmp(words[1], "_NONE_") == 0 || strcmp(words[2], "_NONE_") == 0)
+      return -2;
+
+    errorCode = write(words);
+  } else if (strcmp(words[0], "read") == 0) {
+    // if it's the "read" command
+    // check if there's 3 arguments
+    if (strcmp(words[2], "_NONE_") == 0 || strcmp(words[3], "_NONE_") != 0)
+      return -2;
+
+    errorCode = read(words);
   } else {
     // Error code for unknown command
     errorCode = -4;

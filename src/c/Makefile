@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g
 
-mykernel : cpu.o interpreter.o kernel.o pcb.o ram.o shell.o shellmemory.o memorymanager.o
+mykernel : cpu.o interpreter.o kernel.o pcb.o ram.o shell.o shellmemory.o memorymanager.o DISK_driver.o
 	$(CC) $(CFLAGS) -o mykernel *.o
 
 cpu.o : cpu.c 
@@ -28,30 +28,23 @@ shellmemory.o : shellmemory.c
 memorymanager.o : memorymanager.c
 	$(CC) -c $(CFLAGS) memorymanager.c 
 
+DISK_driver.o : DISK_driver.c
+	$(CC) -c $(CFLAGS) DISK_driver.c 
+
 .PHONY:
 clean:
 	rm -f *.o
 	rm -f mykernel
+	rm -fr BackingStore
+	rm -fr PARTITION
 
 .PHONY:
-test_a1: mykernel
-	./mykernel < ../../test/a1/TESTFILE.txt > ../../test/a1/output.txt
-	diff ../../test/a1/output.txt ../../test/a1/EXPECTED_OUTPUT.txt
-	rm ../../test/a1/output.txt
+reset:
+	rm -fr BackingStore
+	rm -fr PARTITION
 
 .PHONY:
-test_a2: mykernel
-	./mykernel < ../../test/a2/TESTFILE.txt > ../../test/a2/output.txt
-	diff ../../test/a2/output.txt ../../test/a2/EXPECTED_OUTPUT.txt
-	rm ../../test/a2/output.txt
-
-.PHONY:
-test_a3: mykernel
-	./mykernel < ../../test/a3/TESTFILE.txt > ../../test/a3/output.txt
-	diff ../../test/a3/output.txt ../../test/a3/EXPECTED_OUTPUT.txt
-	rm ../../test/a3/output.txt
-
-.PHONY:
-test: test_a1 test_a2 test_a3
-	
-
+test: mykernel
+	./mykernel < test/testfile1.txt
+	./mykernel < test/testfile2.txt
+	./mykernel < test/testfile3.txt

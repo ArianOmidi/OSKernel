@@ -1,40 +1,59 @@
 #include <stdio.h>
 #include <stdlib.h>
+/*
+PCB has 3 fields
+PID : Unique identifier for the PCB
+PC : Points to the first line (in RAM) of current frame reached for that program
+pageTable[10]: Index of that array is the pagenumber and the content of the cell maps to the frame number
+PC_page: current page the program is at currently
+PC_offset: current offset from beginning of frame program is currently at
+pages_max: total number of pages of that program
+*/
+typedef struct PCB
+{
+    int PID;
+    int PC;
+    int pageTable[10];
+    int PC_page;
+    int PC_offset;
+    int pages_max;
+}PCB;
 
-typedef struct PCB {
-  int PID;
-  int PC;
-  int PC_page;
-  int PC_offset;
-  int pages_max;
-  int pageTable[10];
-} PCB;
+/*
+Returns a new struct PCB* with those values:
+PID = pid
+pages_max = argument passed
+PC_page = 0
+PC_offset = 0
+pageTable[i] = -1 (For 0 to page_max-1)
 
-PCB *makePCB(int PID, int numOfPages) {
-  PCB *pcb = (PCB *)malloc(sizeof(PCB));
-
-  pcb->PID = PID;
-  pcb->PC = 0;
-  pcb->PC_page = 0;
-  pcb->PC_offset = 0;
-  pcb->pages_max = numOfPages;
-
-  for (int i = 0; i < 10; i++) {
-    pcb->pageTable[i] = -1;
-  }
-
-  return pcb;
+If cannot create pcb, returns NULL
+*/
+PCB* makePCB(int max_pages, int pid){
+    PCB* pcb = (PCB*)malloc(sizeof(PCB));
+    if (pcb == NULL) return NULL;
+    pcb->PID = pid;
+    pcb->pages_max = max_pages;
+    for (int i = 0; i < max_pages; i++)
+    {
+        pcb->pageTable[i]=-1;
+    }
+    pcb->PC_page=0;
+    pcb->PC_offset=0;
+    return pcb;
 }
 
-// For debugging
-void printPCB(PCB *pcb) {
-  printf("\n\t---------- PCB ----------\n");
-  printf("\tPID: %d, PageCount: %d\n", pcb->PID, pcb->pages_max);
-  printf("\tPC_pg: %d, PC_off: %d\n", pcb->PC_page, pcb->PC_offset);
-  printf("\t----- Page Table -----\n");
-  for (int i = 0; i < 10; i += 2) {
-    printf("\t%d -> %d\t%d -> %d\n", i, pcb->pageTable[i], i + 1,
-           pcb->pageTable[i + 1]);
-  }
-  printf("\t----------------------\n");
+/*
+Passes a pointer to a PCB and a framenumber.
+Returns 1 if that framenumber is in the PCB pageTable
+Return 0 if framenumber is not present in the PCB pageTable
+*/
+int isAFrameOf(PCB* pcb, int frameNumber){
+    for (int i = 0; i < pcb->pages_max; i++)
+    {
+        if ( pcb->pageTable[i] == frameNumber ) return 1;
+    }
+    return 0;
 }
+
+

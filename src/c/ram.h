@@ -3,13 +3,11 @@
 
 #include <stdio.h>
 
-#define RAM_SIZE 40
-
 /*
 Ram structure implemented as an array.
-Size is RAM_SIZE strings
+Size is 40 strings
 */
-char *ram[RAM_SIZE];
+char *ram[40];
 
 /*
 This function will add the content of a file to the local ram array variable
@@ -31,23 +29,22 @@ of file in ram
 void removeFromRam(int, int);
 
 /*
-Reset the pointer to the free cell back to index 0
+This function will delete a frame corresponding to the passed frameNumber from
+the ram
 */
-void resetRAM();
+void removeFrameFromRAM(int);
 
 /*
-Init RAM
+This function clears the RAM.
 */
-void initRAM();
+void clearRAM();
 
 /*
-Get next free frame
+Passing a filepointer to a line in a textfile, the function will read the 4
+lines from that pointer and store these 4 lines at the framenumber specified.
 */
-int getFreeFrame();
+void addFrameToRAM(FILE *p, int frameNumber);
 
-/*
-For degugging purposes
-*/
-void printRAM();
+void displayRAM();
 
 #endif
