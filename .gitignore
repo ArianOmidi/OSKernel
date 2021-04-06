@@ -1,9 +1,10 @@
-submission/
-
-.vscode/
-.DS_Store/
-
-*.o
 BackingStore/
 PARTITION/
+
+submission/
+BackingStore/
+PARTITION/
+
+*.o
+mykernel
 output.txt
