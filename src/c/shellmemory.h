@@ -1,5 +1,5 @@
-#ifndef SHELL_MEMORY_H
-#define SHELL_MEMORY_H
+#ifndef SHELLMEMORY_H
+#define SHELLMEMORY_H
 
 /*
 This functions takes a variable name and value.

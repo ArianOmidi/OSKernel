@@ -1,5 +1,5 @@
-BackingStore/
-PARTITION/
+.vscode/
+.DS_Store/
 
 submission/
 BackingStore/

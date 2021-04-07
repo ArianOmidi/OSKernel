@@ -1,9 +1,0 @@
-# define useful output vars
-set pbr ====================
-set fbr ---------------
-set p1 =====PARTITION1=====
-set p2 =====PARTITION2=====
-set p3 =====PARTITION3=====
-set f1 -----FILE1-----
-set f2 -----FILE2-----
-set f3 -----FILE3-----
