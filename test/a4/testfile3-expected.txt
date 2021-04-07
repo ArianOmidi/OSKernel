@@ -1,0 +1,26 @@
+----------------------------------
+Kernel 4.0 loaded!
+Welcome to the Arian Omidi Shell!
+Shell Version 3.0 Updated April 2021
+----------------------------------
+/////////////////////////////// STARTING EXECUTION OF utils.txt ///////////////////////////////
+/////////////////////////////// Terminating execution of utils.txt ///////////////////////////////
+WARNING : Partition data is full, the first 60 bytes were written to 'file1'
+ERRORCODE -11 : CURRENT PARTITION DATA IS FULL
+=====PARTITION3=====
+-----FILE1-----
+THIS FILE 
+IS TOO LON
+G TO FIT I
+N THIS PAR
+TITION. EN
+D HERE -->
+WARNING : Requested to read past EOF
+---------------
+-----FILE2-----
+ERRORCODE -11 : CURRENT PARTITION DATA IS FULL
+---------------
+====================
+----------------------------------
+Exiting, Farewell...
+----------------------------------

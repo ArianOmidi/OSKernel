@@ -1,24 +1,8 @@
-
 ----------------------------------
-Kernel 1.0 loaded!
+Kernel 4.0 loaded!
 Welcome to the Arian Omidi Shell!
-Shell Version 2.0 Updated February 2020
+Shell Version 3.0 Updated April 2021
 ----------------------------------
-$ -------------------------------------------------------------------------------------------------------
-COMMANDS			DESCRIPTIONS
--------------------------------------------------------------------------------------------------------
-help				Displays all commands
-quit				Terminates the shell
-set VAR STRING			Assigns the value STRING to the shell memory variable VAR
-print VAR			Displays the STRING value assigned to the shell memory variable VAR
-run SCRIPT.TXT			Executes the file SCRIPT.txt
-exec p1 p2 p3			Executes programs p1 p2 p3 concurrently
--------------------------------------------------------------------------------------------------------
-$ Variable does not exist
-$ $ John
-$ $ Bob
-$ $ Arian
-$ /////////////////////////////// STARTING EXECUTION OF ../../test/a1/test.txt ///////////////////////////////
 -------------------------------------------------------------------------------------------------------
 COMMANDS			DESCRIPTIONS
 -------------------------------------------------------------------------------------------------------
@@ -29,12 +13,12 @@ print VAR			Displays the STRING value assigned to the shell memory variable VAR
 run SCRIPT.TXT			Executes the file SCRIPT.txt
 exec p1 p2 p3			Executes programs p1 p2 p3 concurrently
 -------------------------------------------------------------------------------------------------------
-ERRORCODE -4 : '
-' IS AN UNKNOWN COMMAND. TRY 'help'
-/////////////////////////////// Terminating execution of ../../test/a1/test.txt ///////////////////////////////
-$ ERRORCODE -4 : 'hello' IS AN UNKNOWN COMMAND. TRY 'help'
-$ ERRORCODE -4 : 'not a command' IS AN UNKNOWN COMMAND. TRY 'help'
-$ -------------------------------------------------------------------------------------------------------
+Variable does not exist
+John
+Bob
+Arian
+/////////////////////////////// STARTING EXECUTION OF test.txt ///////////////////////////////
+-------------------------------------------------------------------------------------------------------
 COMMANDS			DESCRIPTIONS
 -------------------------------------------------------------------------------------------------------
 help				Displays all commands
@@ -44,5 +28,26 @@ print VAR			Displays the STRING value assigned to the shell memory variable VAR
 run SCRIPT.TXT			Executes the file SCRIPT.txt
 exec p1 p2 p3			Executes programs p1 p2 p3 concurrently
 -------------------------------------------------------------------------------------------------------
-$ Variable does not exist
-$ 
+Fenway
+Murphy
+Frank
+Variable does not exist
+ERRORCODE -4 : 'cd' IS AN UNKNOWN COMMAND. TRY 'help'
+ERRORCODE -4 : 'cd hom' IS AN UNKNOWN COMMAND. TRY 'help'
+/////////////////////////////// Terminating execution of test.txt ///////////////////////////////
+ERRORCODE -4 : 'hello' IS AN UNKNOWN COMMAND. TRY 'help'
+ERRORCODE -4 : 'not' IS AN UNKNOWN COMMAND. TRY 'help'
+-------------------------------------------------------------------------------------------------------
+COMMANDS			DESCRIPTIONS
+-------------------------------------------------------------------------------------------------------
+help				Displays all commands
+quit				Terminates the shell
+set VAR STRING			Assigns the value STRING to the shell memory variable VAR
+print VAR			Displays the STRING value assigned to the shell memory variable VAR
+run SCRIPT.TXT			Executes the file SCRIPT.txt
+exec p1 p2 p3			Executes programs p1 p2 p3 concurrently
+-------------------------------------------------------------------------------------------------------
+Fenway
+----------------------------------
+Exiting, Farewell...
+----------------------------------

@@ -6,7 +6,7 @@ set y Bob
 print y
 set x Arian
 print x
-run ../../test/a1/test.txt
+run test.txt
 hello
 not a command
 help

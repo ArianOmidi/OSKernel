@@ -1,0 +1,34 @@
+----------------------------------
+Kernel 4.0 loaded!
+Welcome to the Arian Omidi Shell!
+Shell Version 3.0 Updated April 2021
+----------------------------------
+/////////////////////////////// STARTING EXECUTION OF utils.txt ///////////////////////////////
+/////////////////////////////// Terminating execution of utils.txt ///////////////////////////////
+=====PARTITION1=====
+-----FILE1-----
+hello
+ worl
+d tes
+t0000
+---------------
+====================
+=====PARTITION2=====
+-----FILE1-----
+this i
+s a te
+st,000
+i hope
+ i pas
+s00000
+---------------
+-----FILE2-----
+ABCDEF
+GHIJK0
+LMNOPQ
+RSTUV0
+---------------
+====================
+----------------------------------
+Exiting, Farewell...
+----------------------------------
