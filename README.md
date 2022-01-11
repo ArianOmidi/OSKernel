@@ -54,11 +54,6 @@ read FILENAME VAR		| Reads the contents of a file into the shell variable, VAR.
 =======================================================================================================
 ```
 
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
 <!-- CONTACT -->
 ## Contact
 
