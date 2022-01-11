@@ -3,7 +3,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About
 
-A fully functioning OS Kernel and file system written in C. Complete with Disk Drivers, I/O, shell memory, and more!
+A fully functioning OS Kernel and file system written in C. Complete with a contigous file system, disk drivers, I/O, memory manager, CPU emulation, and more!
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -17,7 +17,11 @@ A fully functioning OS Kernel and file system written in C. Complete with Disk D
    cd ./src/c/
    make
    ```
-3. Run Tests (Using [BASH Testing System](https://github.com/ArianOmidi/BashTestingSystem))
+3. Test Files
+   ```sh
+   ./mykernel < testfile.txt
+   ```
+4. Test Suite (Using [BASH Testing System](https://github.com/ArianOmidi/BashTestingSystem))
    ```sh
    cd ./test/
    ./test.sh
