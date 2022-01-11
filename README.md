@@ -19,7 +19,7 @@ A fully functioning OS Kernel and file system written in C. Complete with Disk D
    ```
 3. Run Tests (Using [BASH Testing System](https://github.com/ArianOmidi/BashTestingSystem))
    ```sh
-   cd ./test
+   cd ./test/
    ./test.sh
    ```
 
