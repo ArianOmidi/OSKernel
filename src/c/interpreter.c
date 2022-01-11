@@ -13,6 +13,68 @@
 #define FALSE 0
 
 /*
+This function prints the commands available
+*/
+int help() {
+  printf(
+      "========================================================================"
+      "===============================\n");
+  printf("COMMANDS\t\t\tDESCRIPTIONS\n");
+  printf(
+      "========================================================================"
+      "===============================\n");
+  printf("help\t\t\t\t| Displays all commands.\n");
+  printf(
+      "----------------------------------------------------------------------"
+      "---------------------------------\n");
+  printf("quit\t\t\t\t| Terminates the shell.\n");
+  printf(
+      "----------------------------------------------------------------------"
+      "---------------------------------\n");
+  printf(
+      "set VAR STRING\t\t\t| Assigns the value STRING to the shell memory "
+      "variable, VAR.\n");
+  printf(
+      "----------------------------------------------------------------------"
+      "---------------------------------\n");
+  printf(
+      "print VAR\t\t\t| Displays the STRING value assigned to the shell memory "
+      "variable, VAR.\n");
+  printf(
+      "----------------------------------------------------------------------"
+      "---------------------------------\n");
+  printf("run SCRIPT.TXT\t\t\t| Executes the file SCRIPT.txt.\n");
+  printf(
+      "----------------------------------------------------------------------"
+      "---------------------------------\n");
+  printf("exec P1 P2 P3\t\t\t| Executes programs P1 P2 P3 concurrently.\n");
+  printf(
+      "----------------------------------------------------------------------"
+      "---------------------------------\n");
+  printf(
+      "mount NAME BLOCKS BLOCK_SIZE\t| Mounts an existing partition or"
+      "creates a new partition if the\n"
+      "\t\t\t\t| partition name does not exist.\n");
+  printf(
+      "----------------------------------------------------------------------"
+      "---------------------------------\n");
+  printf(
+      "write FILENAME [STRING]\t\t| Writes the inputed string, enclosed by "
+      "[], to a file.\n");
+  printf(
+      "----------------------------------------------------------------------"
+      "---------------------------------\n");
+  printf(
+      "read FILENAME VAR\t\t| Reads the contents of a file into the shell "
+      "variable, VAR.\n");
+  printf(
+      "========================================================================"
+      "===============================\n");
+
+  return 0;
+}
+
+/*
 This function takes an array of string.
 First string is the "set" command
 Second string is a variable name
@@ -245,27 +307,7 @@ int interpreter(char* words[]) {
     return 0;
   } else if (strcmp(words[0], "help") == 0) {
     // if it's the "help" command, we display the description of every commands
-    printf(
-        "----------------------------------------------------------------------"
-        "---------------------------------\n");
-    printf("COMMANDS\t\t\tDESCRIPTIONS\n");
-    printf(
-        "----------------------------------------------------------------------"
-        "---------------------------------\n");
-    printf("help\t\t\t\tDisplays all commands\n");
-    printf("quit\t\t\t\tTerminates the shell\n");
-    printf(
-        "set VAR STRING\t\t\tAssigns the value STRING to the shell memory "
-        "variable VAR\n");
-    printf(
-        "print VAR\t\t\tDisplays the STRING value assigned to the shell memory "
-        "variable VAR\n");
-    printf("run SCRIPT.TXT\t\t\tExecutes the file SCRIPT.txt\n");
-    printf("exec p1 p2 p3\t\t\tExecutes programs p1 p2 p3 concurrently\n");
-    printf(
-        "----------------------------------------------------------------------"
-        "---------------------------------\n");
-
+    help();
   } else if (strcmp(words[0], "quit") == 0) {
     // if it's the "quit" command
     // errorCode is 1 when user voluntarily wants to quit the program.
